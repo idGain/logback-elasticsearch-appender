@@ -25,16 +25,13 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
 
     public static final String THREAD_NAME_PREFIX = "es-writer-";
     private static final AtomicInteger THREAD_COUNTER = new AtomicInteger(1);
-    private static final ThreadLocal<DateFormat> DATE_FORMAT = new ThreadLocal<DateFormat>() {
-        @Override
-        protected DateFormat initialValue() {
-            return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        }
-    };
+    private static final ThreadLocal<DateFormat> DATE_FORMAT = ThreadLocal.withInitial(() ->
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+    );
     private final Object lock;
     private final PropertySerializer propertySerializer;
     protected Settings settings;
-    private volatile List<T> events;
+    private List<T> events;
     private final ElasticsearchOutputAggregator outputAggregator;
     private final List<AbstractPropertyAndEncoder<T>> propertyList;
     private final AbstractPropertyAndEncoder<T> indexPattern;
@@ -135,6 +132,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
                             if (currentTry > maxRetries) {
                                 // Oh well, better luck next time
                                 working = false;
+                                DATE_FORMAT.remove();
                                 return;
                             }
                         }
