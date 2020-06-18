@@ -81,7 +81,7 @@ public class AWSAuthentication implements Authentication {
 
         @Override
         public void addParameter(String name, String value) {
-
+            throw new UnsupportedOperationException();
         }
 
         @Override
@@ -121,6 +121,7 @@ public class AWSAuthentication implements Authentication {
 
         @Override
         public void setContent(InputStream content) {
+            throw new UnsupportedOperationException();
         }
 
         @Override

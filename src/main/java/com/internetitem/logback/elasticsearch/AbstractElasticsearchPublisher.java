@@ -29,7 +29,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
             new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     );
     private final Object lock;
-    private final PropertySerializer propertySerializer;
+    private final PropertySerializer<T> propertySerializer;
     protected Settings settings;
     private volatile List<T> events;
     private final ElasticsearchOutputAggregator outputAggregator;
@@ -42,7 +42,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
 
     public AbstractElasticsearchPublisher(Context context, ErrorReporter errorReporter, Settings settings, ElasticsearchProperties properties, HttpRequestHeaders headers) throws IOException {
         this.errorReporter = errorReporter;
-        this.events = new ArrayList<T>();
+        this.events = new ArrayList<>();
         this.lock = new Object();
         this.settings = settings;
 
@@ -55,7 +55,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
         this.indexPattern = buildPropertyAndEncoder(context, new Property("<index>", settings.getIndex(), false));
         this.propertyList = generatePropertyList(context, properties);
 
-        this.propertySerializer = new PropertySerializer();
+        this.propertySerializer = new PropertySerializer<>();
     }
 
     private static ElasticsearchOutputAggregator configureOutputAggregator(Settings settings, ErrorReporter errorReporter, HttpRequestHeaders httpRequestHeaders) {
@@ -81,7 +81,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
     }
 
     private List<AbstractPropertyAndEncoder<T>> generatePropertyList(Context context, ElasticsearchProperties properties) {
-        List<AbstractPropertyAndEncoder<T>> list = new ArrayList<AbstractPropertyAndEncoder<T>>();
+        List<AbstractPropertyAndEncoder<T>> list = new ArrayList<>();
         if (properties != null) {
             for (Property property : properties.getProperties()) {
                 list.add(buildPropertyAndEncoder(context, property));
@@ -118,7 +118,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
                 synchronized (lock) {
                     if (!events.isEmpty()) {
                         eventsCopy = events;
-                        events = new ArrayList<T>();
+                        events = new ArrayList<>();
                         currentTry = 1;
                     }
 

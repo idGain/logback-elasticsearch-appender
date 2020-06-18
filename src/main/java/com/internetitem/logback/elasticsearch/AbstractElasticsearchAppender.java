@@ -52,11 +52,6 @@ public abstract class AbstractElasticsearchAppender<T> extends UnsynchronizedApp
     protected abstract AbstractElasticsearchPublisher<T> buildElasticsearchPublisher() throws IOException;
 
     @Override
-    public void stop() {
-        super.stop();
-    }
-
-    @Override
     protected void append(T eventObject) {
         appendInternal(eventObject);
     }

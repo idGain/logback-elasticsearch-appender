@@ -74,7 +74,7 @@ public class ElasticsearchWriter implements SafeWriter {
         }
 
         HttpURLConnection urlConnection = (HttpURLConnection) (settings.getUrl().openConnection());
-        try {
+        try (Writer writer = new OutputStreamWriter(urlConnection.getOutputStream(), StandardCharsets.UTF_8)) {
             urlConnection.setDoInput(true);
             urlConnection.setDoOutput(true);
             urlConnection.setReadTimeout(settings.getReadTimeout());
@@ -93,10 +93,8 @@ public class ElasticsearchWriter implements SafeWriter {
                 settings.getAuthentication().addAuth(urlConnection, body);
             }
 
-            Writer writer = new OutputStreamWriter(urlConnection.getOutputStream(), StandardCharsets.UTF_8);
             writer.write(body);
             writer.flush();
-            writer.close();
 
             int rc = urlConnection.getResponseCode();
             if (rc != 200) {

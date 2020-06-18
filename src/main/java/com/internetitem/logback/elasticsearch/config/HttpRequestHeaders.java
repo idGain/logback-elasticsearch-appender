@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class HttpRequestHeaders {
 
-    private final List<HttpRequestHeader> headers = new LinkedList<HttpRequestHeader>();
+    private final List<HttpRequestHeader> headers = new LinkedList<>();
 
     public List<HttpRequestHeader> getHeaders() {
         return headers;

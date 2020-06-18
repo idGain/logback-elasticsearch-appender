@@ -17,7 +17,10 @@ public class LoggerWriter implements SafeWriter {
         if (logger == null) {
             logger = LoggerFactory.getLogger(loggerName);
         }
-        logger.info(new String(cbuf, 0, len));
+
+        if (logger.isInfoEnabled()) {
+            logger.info(new String(cbuf, 0, len));
+        }
     }
 
     public void sendData() {

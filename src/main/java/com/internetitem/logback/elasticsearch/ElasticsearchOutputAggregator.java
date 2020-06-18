@@ -17,7 +17,7 @@ public class ElasticsearchOutputAggregator extends Writer {
     private final List<SafeWriter> writers;
 
     public ElasticsearchOutputAggregator(Settings settings, ErrorReporter errorReporter) {
-        this.writers = new ArrayList<SafeWriter>();
+        this.writers = new ArrayList<>();
         this.settings = settings;
         this.errorReporter = errorReporter;
     }
