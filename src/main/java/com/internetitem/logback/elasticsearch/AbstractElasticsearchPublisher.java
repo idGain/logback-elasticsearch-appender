@@ -31,7 +31,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
     private final Object lock;
     private final PropertySerializer propertySerializer;
     protected Settings settings;
-    private List<T> events;
+    private volatile List<T> events;
     private final ElasticsearchOutputAggregator outputAggregator;
     private final List<AbstractPropertyAndEncoder<T>> propertyList;
     private final AbstractPropertyAndEncoder<T> indexPattern;
