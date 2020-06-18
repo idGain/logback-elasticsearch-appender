@@ -15,17 +15,17 @@ import java.io.IOException;
 
 public class AccessElasticsearchPublisher extends AbstractElasticsearchPublisher<IAccessEvent> {
 
-	public AccessElasticsearchPublisher(Context context, ErrorReporter errorReporter, Settings settings, ElasticsearchProperties properties, HttpRequestHeaders httpRequestHeaders) throws IOException {
-		super(context, errorReporter, settings, properties, httpRequestHeaders);
-	}
+    public AccessElasticsearchPublisher(Context context, ErrorReporter errorReporter, Settings settings, ElasticsearchProperties properties, HttpRequestHeaders httpRequestHeaders) throws IOException {
+        super(context, errorReporter, settings, properties, httpRequestHeaders);
+    }
 
-	@Override
-	protected AbstractPropertyAndEncoder<IAccessEvent> buildPropertyAndEncoder(Context context, Property property) {
-		return new AccessPropertyAndEncoder(property, context);
-	}
+    @Override
+    protected AbstractPropertyAndEncoder<IAccessEvent> buildPropertyAndEncoder(Context context, Property property) {
+        return new AccessPropertyAndEncoder(property, context);
+    }
 
-	@Override
-	protected void serializeCommonFields(JsonGenerator gen, IAccessEvent event) throws IOException {
-		gen.writeObjectField("@timestamp", getTimestamp(event.getTimeStamp()));
-	}
+    @Override
+    protected void serializeCommonFields(JsonGenerator gen, IAccessEvent event) throws IOException {
+        gen.writeObjectField("@timestamp", getTimestamp(event.getTimeStamp()));
+    }
 }

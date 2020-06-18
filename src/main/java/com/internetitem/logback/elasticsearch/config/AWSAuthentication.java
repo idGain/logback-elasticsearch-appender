@@ -52,21 +52,21 @@ public class AWSAuthentication implements Authentication {
 
         private final HttpURLConnection urlConnection;
         private final String body;
-        private final Map<String,String> headers = new HashMap<>();
+        private final Map<String, String> headers = new HashMap<>();
 
         public URLConnectionSignableRequest(HttpURLConnection urlConnection, String body) {
             this.urlConnection = urlConnection;
             this.body = body;
-            addHeader("User-Agent","ElasticSearchWriter/1.0");
-            addHeader("Accept","*/*");
-            addHeader("Content-Type","application/json");
-            addHeader("Content-Length",String.valueOf(body.length()));
+            addHeader("User-Agent", "ElasticSearchWriter/1.0");
+            addHeader("Accept", "*/*");
+            addHeader("Content-Type", "application/json");
+            addHeader("Content-Length", String.valueOf(body.length()));
         }
 
         @Override
         public void addHeader(String name, String value) {
             this.urlConnection.addRequestProperty(name, value);
-            headers.put(name,value);
+            headers.put(name, value);
         }
 
         @Override
@@ -93,7 +93,7 @@ public class AWSAuthentication implements Authentication {
         public URI getEndpoint() {
             try {
                 URL u = urlConnection.getURL();
-                return new URI(u.getProtocol(),null, u.getHost(), u.getPort(), null, null, null);
+                return new URI(u.getProtocol(), null, u.getHost(), u.getPort(), null, null, null);
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
