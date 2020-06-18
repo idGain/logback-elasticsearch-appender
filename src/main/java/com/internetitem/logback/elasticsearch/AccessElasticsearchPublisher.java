@@ -1,7 +1,5 @@
 package com.internetitem.logback.elasticsearch;
 
-import java.io.IOException;
-
 import ch.qos.logback.access.spi.IAccessEvent;
 import ch.qos.logback.core.Context;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -12,6 +10,8 @@ import com.internetitem.logback.elasticsearch.config.Settings;
 import com.internetitem.logback.elasticsearch.util.AbstractPropertyAndEncoder;
 import com.internetitem.logback.elasticsearch.util.AccessPropertyAndEncoder;
 import com.internetitem.logback.elasticsearch.util.ErrorReporter;
+
+import java.io.IOException;
 
 public class AccessElasticsearchPublisher extends AbstractElasticsearchPublisher<IAccessEvent> {
 

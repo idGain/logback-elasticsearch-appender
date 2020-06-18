@@ -1,9 +1,9 @@
 package com.internetitem.logback.elasticsearch;
 
-import java.io.IOException;
-
 import ch.qos.logback.access.spi.IAccessEvent;
 import com.internetitem.logback.elasticsearch.config.Settings;
+
+import java.io.IOException;
 
 public class ElasticsearchAccessAppender extends AbstractElasticsearchAppender<IAccessEvent> {
 

@@ -1,5 +1,15 @@
 package com.internetitem.logback.elasticsearch.config;
 
+import com.amazonaws.ReadLimitInfo;
+import com.amazonaws.SignableRequest;
+import com.amazonaws.auth.AWS4Signer;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.http.HttpMethodName;
+import com.amazonaws.regions.DefaultAwsRegionProviderChain;
+import com.amazonaws.util.StringInputStream;
+
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -10,16 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.amazonaws.ReadLimitInfo;
-import com.amazonaws.SignableRequest;
-import com.amazonaws.auth.AWS4Signer;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.http.HttpMethodName;
-import com.amazonaws.regions.DefaultAwsRegionProviderChain;
-import com.amazonaws.util.StringInputStream;
 
 /**
  * This class implements Amazon AWS v4 Signature signing for ElasticSearch.

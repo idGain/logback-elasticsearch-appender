@@ -1,5 +1,10 @@
 package com.internetitem.logback.elasticsearch.writer;
 
+import com.internetitem.logback.elasticsearch.config.HttpRequestHeader;
+import com.internetitem.logback.elasticsearch.config.HttpRequestHeaders;
+import com.internetitem.logback.elasticsearch.config.Settings;
+import com.internetitem.logback.elasticsearch.util.ErrorReporter;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,11 +13,6 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.util.Collection;
 import java.util.Collections;
-
-import com.internetitem.logback.elasticsearch.config.HttpRequestHeader;
-import com.internetitem.logback.elasticsearch.config.HttpRequestHeaders;
-import com.internetitem.logback.elasticsearch.config.Settings;
-import com.internetitem.logback.elasticsearch.util.ErrorReporter;
 
 public class ElasticsearchWriter implements SafeWriter {
 
