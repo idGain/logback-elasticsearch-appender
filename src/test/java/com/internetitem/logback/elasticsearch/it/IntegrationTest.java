@@ -2,16 +2,13 @@ package com.internetitem.logback.elasticsearch.it;
 
 import com.internetitem.logback.elasticsearch.ElasticsearchAppender;
 import org.apache.http.HttpHost;
+import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.CreateIndexRequest;
-import org.elasticsearch.client.indices.CreateIndexResponse;
-import org.elasticsearch.client.indices.GetIndexRequest;
-import org.elasticsearch.client.indices.GetIndexResponse;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
@@ -27,15 +24,15 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public abstract class IntegrationTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntegrationTest.class);
 
     private static final String INDEX = "log_entries";
-    private static final int WAIT_FOR_INDEX_MAX_RETRIES = 10;
-    private static final int WAIT_FOR_INDEX_SLEEP_INTERVAL = 100;
+    private static final int WAIT_FOR_DOCUMENTS_MAX_RETRIES = 10;
+    private static final int WAIT_FOR_DOCUMENTS_SLEEP_INTERVAL = 500;
     protected static final String ELASTICSEARCH_LOGGER_NAME = "ES_LOGGER";
     private static final String ELASTICSEARCH_APPENDER_NAME = "ES_APPENDER";
 
@@ -43,7 +40,7 @@ public abstract class IntegrationTest {
     protected static ElasticsearchContainer container;
 
     @BeforeClass
-    public static void setupElasticSearchContainer() throws IOException, InterruptedException {
+    public static void setupElasticSearchContainer() throws IOException {
         // Create the elasticsearch container.
         IntegrationTest.container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.7.1");
 
@@ -55,15 +52,6 @@ public abstract class IntegrationTest {
         configureElasticSearchAppender();
 
         deleteAll();
-    }
-
-    private static void configureElasticSearchAppender() throws MalformedURLException {
-        ch.qos.logback.classic.Logger logbackLogger = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(ELASTICSEARCH_LOGGER_NAME);
-        ElasticsearchAppender appender = (ElasticsearchAppender)logbackLogger.getAppender(ELASTICSEARCH_APPENDER_NAME);
-
-        String containerUrl = HttpHost.create(container.getHttpHostAddress()).toURI() + "/_bulk";
-        LOG.info("Configure appender {} to use {} as container address.", ELASTICSEARCH_APPENDER_NAME, containerUrl);
-        appender.setUrl(containerUrl);
     }
 
     @AfterClass
@@ -92,28 +80,30 @@ public abstract class IntegrationTest {
         LOG.info("Deleted {} documents from elasticsearch.", deleted);
     }
 
-    private static void createIndex() throws IOException, InterruptedException {
-        CreateIndexRequest request = new CreateIndexRequest(INDEX);
-        CreateIndexResponse response = client.indices().create(request, RequestOptions.DEFAULT);
-
-        assertTrue("Could not create index. Shutdown", response.isAcknowledged());
-        waitForIndex();
-    }
-
-    /**
-     * Waits for the specified index to exist
-     */
-    private static void waitForIndex() throws InterruptedException, IOException {
-        int retries = WAIT_FOR_INDEX_MAX_RETRIES;
-        while (!getIndex() && retries-- > 0) {
-            LOG.debug("Index {} not found, sleeping for {}...", INDEX, WAIT_FOR_INDEX_SLEEP_INTERVAL);
-            Thread.sleep(WAIT_FOR_INDEX_SLEEP_INTERVAL);
+    protected void checkLogEntries(long desiredCount) throws IOException {
+        LOG.info("Check if we have {} documents in Elasticsearch. Max retries: {}", desiredCount, WAIT_FOR_DOCUMENTS_MAX_RETRIES);
+        int retries = WAIT_FOR_DOCUMENTS_MAX_RETRIES;
+        SearchHits hits = searchAll();
+        while (hits.getTotalHits().value != desiredCount && retries-- > 0) {
+            try {
+                LOG.debug("Found {} documents. Desired count is {}. Retry...", hits.getTotalHits().value, desiredCount);
+                Thread.sleep(WAIT_FOR_DOCUMENTS_SLEEP_INTERVAL);
+                hits = searchAll();
+            } catch (InterruptedException | ElasticsearchStatusException ex) {
+                // just retrying
+            }
         }
+
+        LOG.debug("Found {} documents. Desired count is {}. Retry...", hits.getTotalHits().value, desiredCount);
+        assertEquals(desiredCount, hits.getTotalHits().value);
     }
 
-    private static boolean getIndex() throws IOException {
-        GetIndexRequest request = new GetIndexRequest(INDEX);
-        GetIndexResponse response = client.indices().get(request, RequestOptions.DEFAULT);
-        return response.getSettings() != null && !response.getSettings().isEmpty();
+    private static void configureElasticSearchAppender() throws MalformedURLException {
+        ch.qos.logback.classic.Logger logbackLogger = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(ELASTICSEARCH_LOGGER_NAME);
+        ElasticsearchAppender appender = (ElasticsearchAppender)logbackLogger.getAppender(ELASTICSEARCH_APPENDER_NAME);
+
+        String containerUrl = HttpHost.create(container.getHttpHostAddress()).toURI() + "/_bulk";
+        LOG.info("Configure appender {} to use {} as container address.", ELASTICSEARCH_APPENDER_NAME, containerUrl);
+        appender.setUrl(containerUrl);
     }
 }
