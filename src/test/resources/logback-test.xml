@@ -1,0 +1,70 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ES_APPENDER" class="com.internetitem.logback.elasticsearch.ElasticsearchAppender">
+        <url>http://localhost:9200/_bulk</url>
+        <index>logs-%date{yyyy-MM-dd}</index>
+        <type>tester</type>
+        <loggerName>es-logger</loggerName> <!-- optional -->
+        <errorLoggerName>es-error-logger</errorLoggerName> <!-- optional -->
+        <includeMdc>true</includeMdc> <!-- optional (default false) -->
+        <properties>
+            <property>
+                <name>host</name>
+                <value>${HOSTNAME}</value>
+                <allowEmpty>false</allowEmpty>
+            </property>
+            <property>
+                <name>severity</name>
+                <value>%level</value>
+            </property>
+            <property>
+                <name>thread</name>
+                <value>%thread</value>
+            </property>
+            <property>
+                <name>stacktrace</name>
+                <value>%ex</value>
+            </property>
+            <property>
+                <name>logger</name>
+                <value>%logger</value>
+            </property>
+        </properties>
+        <headers>
+            <header>
+                <name>Content-Type</name>
+                <value>application/x-ndjson</value>
+            </header>
+        </headers>
+    </appender>
+
+    <logger name="ES_LOGGER" level="debug" additivity="false">
+        <appender-ref ref="ES_APPENDER" />
+    </logger>
+
+    <logger name="es-logger" level="INFO" additivity="false">
+        <appender name="ES_FILE" class="ch.qos.logback.core.FileAppender">
+            <file>target/logs/es-messages.log</file>
+            <append>false</append>
+            <!-- set immediateFlush to false for much higher logging throughput -->
+            <immediateFlush>true</immediateFlush>
+            <encoder>
+                <pattern>%msg</pattern> <!-- This pattern is important, otherwise it won't be the raw Elasticsearch format anyomre -->
+            </encoder>
+        </appender>
+    </logger>
+
+    <logger name="com.internetitem" level="debug" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>
