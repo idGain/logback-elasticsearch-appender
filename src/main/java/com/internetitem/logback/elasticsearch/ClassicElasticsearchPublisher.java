@@ -9,6 +9,7 @@ import com.internetitem.logback.elasticsearch.config.Property;
 import com.internetitem.logback.elasticsearch.config.Settings;
 import com.internetitem.logback.elasticsearch.util.AbstractPropertyAndEncoder;
 import com.internetitem.logback.elasticsearch.util.ClassicPropertyAndEncoder;
+import com.internetitem.logback.elasticsearch.util.ContextMapWriter;
 import com.internetitem.logback.elasticsearch.util.ErrorReporter;
 
 import java.io.IOException;
@@ -16,8 +17,11 @@ import java.util.Map;
 
 public class ClassicElasticsearchPublisher extends AbstractElasticsearchPublisher<ILoggingEvent> {
 
+    protected ContextMapWriter contextMapWriter;
+
     public ClassicElasticsearchPublisher(Context context, ErrorReporter errorReporter, Settings settings, ElasticsearchProperties properties, HttpRequestHeaders headers) throws IOException {
         super(context, errorReporter, settings, properties, headers);
+        contextMapWriter = new ContextMapWriter();
     }
 
     @Override
@@ -48,6 +52,10 @@ public class ClassicElasticsearchPublisher extends AbstractElasticsearchPublishe
             for (Map.Entry<String, String> entry : event.getMDCPropertyMap().entrySet()) {
                 gen.writeObjectField(entry.getKey(), entry.getValue());
             }
+        }
+
+        if (settings.isEnableContextMap()) {
+            contextMapWriter.writeContextMap(gen, event);
         }
     }
 }
