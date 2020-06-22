@@ -33,12 +33,14 @@ In your `logback.xml`:
             <logsToStderr>false</logsToStderr> <!-- optional (default false) -->
             <maxQueueSize>104857600</maxQueueSize> <!-- optional (default 104857600) -->
             <maxRetries>3</maxRetries> <!-- optional (default 3) -->
+            <maxEvents>100</maxEvents><!-- optional (default -1) -->
             <readTimeout>30000</readTimeout> <!-- optional (in ms, default 30000) -->
             <sleepTime>250</sleepTime> <!-- optional (in ms, default 250) -->
             <rawJsonMessage>false</rawJsonMessage> <!-- optional (default false) -->
             <includeMdc>false</includeMdc> <!-- optional (default false) -->
             <maxMessageSize>100</maxMessageSize> <!-- optional (default -1 -->
             <authentication class="com.internetitem.logback.elasticsearch.config.BasicAuthentication" /> <!-- optional -->
+            <enableContextMap>false</enableContextMap><!-- optional (default false) -->
             <properties>
                 <property>
                     <name>host</name>
@@ -104,19 +106,21 @@ Configuration Reference
  * `errorsToStderr` (optional, default false): If set to `true`, any errors in communicating with Elasticsearch will also be dumped to stderr (normally they are only reported to the internal Logback Status system, in order to prevent a feedback loop)
  * `logsToStderr` (optional, default false): If set to `true`, dump the raw Elasticsearch messages to stderr
  * `maxQueueSize` (optional, default 104,857,600 = 200MB): Maximum size (in characters) of the send buffer. After this point, *logs will be dropped*. This should only happen if Elasticsearch is down, but this is a self-protection mechanism to ensure that the logging system doesn't cause the main process to run out of memory. Note that this maximum is approximate; once the maximum is hit, no new logs will be accepted until it shrinks, but any logs already accepted to be processed will still be added to the buffer
+ * `maxEvents` (optional, default -1 i.e. not limited): Maximum amount of logging events to be stored for later sending.
  * `loggerName` (optional): If set, raw ES-formatted log data will be sent to this logger
  * `errorLoggerName` (optional): If set, any internal errors or problems will be logged to this logger
  * `rawJsonMessage` (optional, default false): If set to `true`, the log message is interpreted as pre-formatted raw JSON message.
  * `includeMdc` (optional, default false): If set to `true`, then all [MDC](http://www.slf4j.org/api/org/slf4j/MDC.html) values will be mapped to properties on the JSON payload.
  * `maxMessageSize` (optional, default -1): If set to a number greater than 0, truncate messages larger than this length, then append "`..`" to denote that the message was truncated
  * `authentication` (optional): Add the ability to send authentication headers (see below)
+ * `enableContextMap` (optional): If the latest parameter in logger call is of type java.util.Map then all content of it will be traversed and written with prefix `context.*`. For event-specific custom fields.
 
 The fields `@timestamp` and `message` are always sent and can not currently be configured. Additional fields can be sent by adding `<property>` elements to the `<properties>` set.
 
  * `name` (required): Key to be used in the log event
  * `value` (required): Text string to be sent. Internally, the value is populated using a Logback PatternLayout, so all [Conversion Words](http://logback.qos.ch/manual/layouts.html#conversionWord) can be used (in addition to the standard static variable interpolations like `${HOSTNAME}`).
  * `allowEmpty` (optional, default `false`): Normally, if the `value` results in a `null` or empty string, the field will not be sent. If `allowEmpty` is set to `true` then the field will be sent regardless
- * `type` (optional, default `String`): type of the field on the resulting JSON message. Possible values are: `String`, `int`, `float` and `boolean`.
+ * `type` (optional, default `String`): type of the field on the resulting JSON message. Possible values are: `String`, `int`, `float`, `boolean` and `object`. Use `object` if the value is the string representation of a JSON object or array ie. `{"k" : true}`or `[1,2,3,]`.
 
 Groovy Configuration
 ====================
@@ -154,3 +158,17 @@ Included is also an Elasticsearch appender for Logback Access. The configuration
 
  * The Appender class name is `com.internetitem.logback.elasticsearch.ElasticsearchAccessAppender`
  * The `value` for each `property` uses the [Logback Access conversion words](http://logback.qos.ch/manual/layouts.html#logback-access).
+
+Event-specific custom fields
+============================
+Log line:
+
+     log.info("Service started in {} seconds", duration/1000, Collections.singletonMap("duration", duration));
+
+Result:
+
+    {
+      "@timestamp": "2014-06-04T15:26:14.464+02:00",
+      "message": "Service started in 12 seconds",
+      "duration": 12368,
+    }

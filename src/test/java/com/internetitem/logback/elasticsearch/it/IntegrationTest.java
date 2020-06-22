@@ -32,7 +32,7 @@ public abstract class IntegrationTest {
 
     private static final String INDEX = "log_entries";
     private static final int WAIT_FOR_DOCUMENTS_MAX_RETRIES = 10;
-    private static final int WAIT_FOR_DOCUMENTS_SLEEP_INTERVAL = 500;
+    private static final int WAIT_FOR_DOCUMENTS_SLEEP_INTERVAL = 1000;
     protected static final String ELASTICSEARCH_LOGGER_NAME = "ES_LOGGER";
     private static final String ELASTICSEARCH_APPENDER_NAME = "ES_APPENDER";
 
@@ -94,8 +94,8 @@ public abstract class IntegrationTest {
             }
         }
 
-        LOG.debug("Found {} documents. Desired count is {}. Retry...", hits.getTotalHits().value, desiredCount);
-        assertEquals(desiredCount, hits.getTotalHits().value);
+        LOG.debug("Found {} documents. Desired count is {}.", hits.getTotalHits().value, desiredCount);
+        assertEquals(String.format("Document count should be %s", desiredCount), desiredCount, hits.getTotalHits().value);
     }
 
     private static void configureElasticSearchAppender() throws MalformedURLException {

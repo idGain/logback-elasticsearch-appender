@@ -198,13 +198,9 @@
     </profiles>
 
     <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
         <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>bintray-maven-repo</id>
+            <url>https://api.bintray.com/maven/cgoit/maven/logback-elasticsearch-appender/;publish=1</url>
         </repository>
     </distributionManagement>
 

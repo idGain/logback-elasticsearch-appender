@@ -52,6 +52,6 @@ public class Property {
     }
 
     public enum Type {
-        STRING, INT, FLOAT, BOOLEAN
+        STRING, INT, FLOAT, BOOLEAN, OBJECT
     }
 }
