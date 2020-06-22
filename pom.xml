@@ -25,9 +25,9 @@
     </organization>
 
     <scm>
-        <connection>scm:git:https://github.com/cgoIT/logback-elasticsearch-appender.git</connection>
-        <developerConnection>scm:git:https://github.com/cgoIT/logback-elasticsearch-appender.git</developerConnection>
         <url>https://github.com/cgoIT/logback-elasticsearch-appender</url>
+        <connection>scm:git:git@github.com:cgoIT/logback-elasticsearch-appender.git</connection>
+        <developerConnection>scm:git:git@github.com:cgoIT/logback-elasticsearch-appender.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -154,6 +154,25 @@
     <profiles>
         <profile>
             <id>release</id>
+            <properties>
+                <gpg.executable>gpg</gpg.executable>
+                <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
+                <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
+
+                <!-- tell gpg to NOT use the default keyring from the current user's home -->
+                <gpg.defaultKeyring>false</gpg.defaultKeyring>
+
+                <!-- instead tell gpg to use the keyrings from your GPG_DIR -->
+                <gpg.publicKeyring>${env.GPG_DIR}/pubring.gpg</gpg.publicKeyring>
+                <gpg.secretKeyring>${env.GPG_DIR}/secring.gpg</gpg.secretKeyring>
+            </properties>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>bintray-cy6ergn0m-maven</id>
+                    <name>bintray-plugins</name>
+                    <url>http://dl.bintray.com/cy6ergn0m/maven</url>
+                </pluginRepository>
+            </pluginRepositories>
             <build>
                 <plugins>
                     <plugin>
@@ -199,6 +218,24 @@
                                         <arg>loopback</arg>
                                     </gpgArguments>
                                 </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>cy.github</groupId>
+                        <artifactId>github-release-plugin</artifactId>
+                        <version>0.5.1</version>
+                        <configuration>
+                            <tagName>${project.version}</tagName>
+                            <releaseTitle>${project.artifactId}-${project.version}</releaseTitle>
+                            <serverId>github</serverId>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>gh-upload</goal>
+                                </goals>
+                                <phase>deploy</phase>
                             </execution>
                         </executions>
                     </plugin>
