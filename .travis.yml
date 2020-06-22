@@ -10,6 +10,8 @@ cache:
   directories:
   - "$HOME/.cache"
   - "$HOME/.m2"
+before_deploy:
+  - "chmod +x ./travis/release.sh"
 deploy:
   provider: script
   script: "./travis/release.sh"
