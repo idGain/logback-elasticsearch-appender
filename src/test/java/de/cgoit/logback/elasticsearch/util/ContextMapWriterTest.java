@@ -1,0 +1,57 @@
+package de.cgoit.logback.elasticsearch.util;
+
+import ch.qos.logback.classic.spi.LoggingEvent;
+import com.fasterxml.jackson.core.JsonGenerator;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
+
+import java.io.IOException;
+
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+
+@RunWith(MockitoJUnitRunner.class)
+public class ContextMapWriterTest {
+
+    @Mock
+    private JsonGenerator jsonGenerator;
+
+
+    private ContextMapWriter contextMapWriter;
+
+    @Before
+    public void setup() throws IOException {
+        contextMapWriter = new ContextMapWriter();
+    }
+
+    @Test
+    public void should_write_if_last_element_is_map() throws IOException {
+        LoggingEvent event = new LoggingEvent();
+        event.setArgumentArray(new Object[] {"123", ImmutableMap.of("test", 123, "test2", "foo")});
+        contextMapWriter.writeContextMap(jsonGenerator, event);
+        verify(jsonGenerator, times(1)).writeObjectField("context.test", 123);
+        verify(jsonGenerator, times(1)).writeObjectField("context.test2", "foo");
+    }
+
+    @Test
+    public void should_not_write_if_arguments_null_or_empty() throws IOException {
+        LoggingEvent event = new LoggingEvent();
+        contextMapWriter.writeContextMap(jsonGenerator, event);
+        event.setArgumentArray(new Object[]{});
+        contextMapWriter.writeContextMap(jsonGenerator, event);
+        verifyZeroInteractions(jsonGenerator);
+    }
+
+    @Test
+    public void should_not_write_if_last_element_not_map() throws IOException {
+        LoggingEvent event = new LoggingEvent();
+        event.setArgumentArray(new Object[]{"23", 3243});
+        contextMapWriter.writeContextMap(jsonGenerator, event);
+        verifyZeroInteractions(jsonGenerator);
+    }
+}

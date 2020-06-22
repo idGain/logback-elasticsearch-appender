@@ -5,7 +5,7 @@
         </encoder>
     </appender>
 
-    <appender name="ES_APPENDER" class="com.internetitem.logback.elasticsearch.ElasticsearchAppender">
+    <appender name="ES_APPENDER" class="de.cgoit.logback.elasticsearch.ElasticsearchAppender">
         <url>http://localhost:9200/_bulk</url>
         <index>logs-%date{yyyy-MM-dd}</index>
         <type>tester</type>
@@ -59,7 +59,7 @@
         </appender>
     </logger>
 
-    <logger name="com.internetitem" level="debug" additivity="false">
+    <logger name="de.cgoit" level="debug" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 

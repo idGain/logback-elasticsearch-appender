@@ -1,7 +1,7 @@
 Logback Elasticsearch Appender
 ===============================
 
-[![Build Status](https://travis-ci.org/internetitem/logback-elasticsearch-appender.svg?branch=master)](https://travis-ci.org/internetitem/logback-elasticsearch-appender)
+[![Build Status](https://travis-ci.org/cgoIT/logback-elasticsearch-appender.svg?branch=master)](https://travis-ci.org/cgoIT/logback-elasticsearch-appender)
 
 Send log events directly from Logback to Elasticsearch. Logs are delivered asynchronously (i.e. not on the main thread) so will not block execution of the program. Note that the queue backlog can be bounded and messages *can* be lost if Elasticsearch is down and either the backlog queue is full or the producer program is trying to exit (it will retry up to a configured number of attempts, but will not block shutdown of the program beyond that). For long-lived programs, this should not be a problem, as messages should be delivered eventually.
 
@@ -14,14 +14,14 @@ Include slf4j and logback as usual (depending on this library will *not* automat
 In your `pom.xml` (or equivalent), add:
 
      <dependency>
-        <groupId>com.internetitem</groupId>
+        <groupId>de.cgoit</groupId>
         <artifactId>logback-elasticsearch-appender</artifactId>
-        <version>1.6</version>
+        <version>2.0</version>
      </dependency>
 
 In your `logback.xml`:
 
-        <appender name="ELASTIC" class="com.internetitem.logback.elasticsearch.ElasticsearchAppender">
+        <appender name="ELASTIC" class="ElasticsearchAppender">
             <url>http://yourserver/_bulk</url>
             <index>logs-%date{yyyy-MM-dd}</index>
             <type>tester</type>
@@ -39,7 +39,7 @@ In your `logback.xml`:
             <rawJsonMessage>false</rawJsonMessage> <!-- optional (default false) -->
             <includeMdc>false</includeMdc> <!-- optional (default false) -->
             <maxMessageSize>100</maxMessageSize> <!-- optional (default -1 -->
-            <authentication class="com.internetitem.logback.elasticsearch.config.BasicAuthentication" /> <!-- optional -->
+            <authentication class="BasicAuthentication" /> <!-- optional -->
             <enableContextMap>false</enableContextMap><!-- optional (default false) -->
             <properties>
                 <property>
@@ -127,7 +127,7 @@ Groovy Configuration
 
 If you configure logback using `logback.groovy`, this can be configured as follows:
 
-      import com.internetitem.logback.elasticsearch.ElasticsearchAppender
+      import ElasticsearchAppender
 
       appender("ELASTIC", ElasticsearchAppender){
       	url = 'http://yourserver/_bulk'
@@ -148,15 +148,15 @@ Authentication
 
 Authentication is a pluggable mechanism. You must specify the authentication class on the XML element itself. The currently supported classes are:
 
-* `com.internetitem.logback.elasticsearch.config.BasicAuthentication` - Username and password are taken from the URL (i.e. `http://username:password@yourserver/_bulk`)
-* `com.internetitem.logback.elasticsearch.config.AWSAuthentication` - Authenticate using the AWS SDK, for use with the [Amazon Elasticsearch Service](https://aws.amazon.com/elasticsearch-service/) (note that you will also need to include `com.amazonaws:aws-java-sdk-core` as a dependency)
+* `BasicAuthentication` - Username and password are taken from the URL (i.e. `http://username:password@yourserver/_bulk`)
+* `AWSAuthentication` - Authenticate using the AWS SDK, for use with the [Amazon Elasticsearch Service](https://aws.amazon.com/elasticsearch-service/) (note that you will also need to include `com.amazonaws:aws-java-sdk-core` as a dependency)
 
 Logback Access
 ==============
 
 Included is also an Elasticsearch appender for Logback Access. The configuration is almost identical, with the following two differences:
 
- * The Appender class name is `com.internetitem.logback.elasticsearch.ElasticsearchAccessAppender`
+ * The Appender class name is `ElasticsearchAccessAppender`
  * The `value` for each `property` uses the [Logback Access conversion words](http://logback.qos.ch/manual/layouts.html#logback-access).
 
 Event-specific custom fields
