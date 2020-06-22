@@ -11,7 +11,7 @@ declare -r pubring_auto="${GPG_DIR}/pubring.auto"
 
 echo
 echo "Import signer public key..."
-gpg ---home "${GPG_DIR}" --import "${GPG_DIR}/signer.pub.asc"
+gpg --import "${GPG_DIR}/signer.pub.asc"
 
 echo
 echo "Decrypting secret gpg keyring.."
