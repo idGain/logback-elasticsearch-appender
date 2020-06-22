@@ -3,4 +3,6 @@ jdk:
   - openjdk8
 services:
   - docker
-script: ./mvnw verify -B
+script:
+  - ./mvnw clean -B
+  - ./mvnw verify -B
