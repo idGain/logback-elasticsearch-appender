@@ -118,7 +118,7 @@ The fields `@timestamp` and `message` are always sent and can not currently be c
  * `name` (required): Key to be used in the log event
  * `value` (required): Text string to be sent. Internally, the value is populated using a Logback PatternLayout, so all [Conversion Words](http://logback.qos.ch/manual/layouts.html#conversionWord) can be used (in addition to the standard static variable interpolations like `${HOSTNAME}`).
  * `allowEmpty` (optional, default `false`): Normally, if the `value` results in a `null` or empty string, the field will not be sent. If `allowEmpty` is set to `true` then the field will be sent regardless
- * `type` (optional, default `String`): type of the field on the resulting JSON message. Possible values are: `String`, `int`, `float` and `boolean`.
+ * `type` (optional, default `String`): type of the field on the resulting JSON message. Possible values are: `String`, `int`, `float`, `boolean` and `object`. Use `object` if the value is the string representation of a JSON object or array ie. `{"k" : true}`or `[1,2,3,]`.
 
 Groovy Configuration
 ====================
