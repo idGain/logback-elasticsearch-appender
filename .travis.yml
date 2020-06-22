@@ -1,8 +1,25 @@
 language: java
+
 jdk:
-  - openjdk8
+- openjdk8
+
 services:
-  - docker
+- docker
+
 script:
-  - ./mvnw clean -B
-  - ./mvnw verify -B
+- "./mvnw clean -B"
+- "./mvnw verify -B"
+
+cache:
+  directories:
+    - "$HOME/.cache"
+deploy:
+  provider: script
+  script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -B"
+  skip_cleanup: true
+  on:
+    tags: true
+
+env:
+  global:
+    secure: UpV7VB5MX2+gtMotT6GXJNJk77jt0aNDuoHsl1uPoOTrk6eieG7WtT1sRXmZpnJpAn77z6Q0y6bo14fxFHcMXFaEuGDIvK0rPEeLFMuvp3OQHUjkmvM553iQ7uu+bq9bvi3oyddbwDo4GxZ3ktSHt+uqA8KZL3/Ts/N8TLDHDYrUnCx5G4hbFp/rSvafxXjmXZfjF2FjMGrSQjkANUSow7GDNqOdj7k917AN6IHepbGIB5yzgXIeaWbNxGknRZTnMUAEDQa5JV6e8ydxlpMbIiotL62aoirpmX0Ib0RtefftHZDhu35rQFU0ZMK5SBY0ecMUypV9NPClrbBJzu2uqMN4lCbukPcAZSQRQZfNXkf9NJxHnKNZVODEuCDKCklnNMENwBpgnU6h0ou9i2ctS0gJ7KNcp/A3is61Qv8Vm+lLvGxu2IiSRKcOHfn3YSOi6YmqVJe5hgPb24yWrf1FXfUawgDHY2IleQfbfDR56GKjT07k98Qd38EmlnMzHH9B59EnDURJxYCYh3N7ODwK9raKPZWaL4IXkIOyYG178ZR7ZVqvAFHCKqvocjlgnSXJ1VoxWDYKspMIdvRhjvT8GI2jByT16TK61W4j9+0PbR+ci0hiU1p7DJ/xRomEmyYKMGiIN8mAM8Hzz3JB9y9RFMjg9bhH/Nt6WeZYpz3yzRk=
