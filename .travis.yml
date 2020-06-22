@@ -12,7 +12,7 @@ cache:
   - "$HOME/.m2"
 before_deploy:
 - chmod +x ./travis/*.sh
-- "./deploy/before-deploy.sh"
+- "./travis/before-deploy.sh"
 deploy:
   provider: script
   script: "./travis/release.sh"
