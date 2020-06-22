@@ -18,6 +18,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,7 +43,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
 
     public AbstractElasticsearchPublisher(Context context, ErrorReporter errorReporter, Settings settings, ElasticsearchProperties properties, HttpRequestHeaders headers) throws IOException {
         this.errorReporter = errorReporter;
-        this.events = new ArrayList<>();
+        this.events = new LinkedList<>();
         this.lock = new Object();
         this.settings = settings;
 
@@ -97,8 +98,14 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
             return;
         }
 
+        int max = settings.getMaxEvents();
+
         synchronized (lock) {
             events.add(event);
+            if (max > 0 && events.size() > max) {
+                errorReporter.logWarning("Max events in queue reached - log messages will be lost until the queue is processed");
+                ((LinkedList<T>)events).removeFirst();
+            }
             if (!working) {
                 working = true;
                 Thread thread = new Thread(this, THREAD_NAME_PREFIX + THREAD_COUNTER.getAndIncrement());
@@ -118,7 +125,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
                 synchronized (lock) {
                     if (!events.isEmpty()) {
                         eventsCopy = events;
-                        events = new ArrayList<>();
+                        events = new LinkedList<>();
                         currentTry = 1;
                     }
 
@@ -185,4 +192,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
 
     protected abstract void serializeCommonFields(JsonGenerator gen, T event) throws IOException;
 
+    public List<T> getEvents() {
+        return this.events;
+    }
 }

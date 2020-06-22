@@ -18,7 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -171,7 +171,6 @@ public class ElasticsearchAppenderTest {
         assertThat(errorReporter.getContext(), is(mockedContext));
     }
 
-
     @Test
     public void should_delegate_setters_to_settings() throws MalformedURLException {
         ElasticsearchAppender appender = new ElasticsearchAppender(settings);
@@ -190,6 +189,7 @@ public class ElasticsearchAppenderTest {
         int readTimeout = 10000;
         int connectTimeout = 5000;
         boolean enableContextMap = true;
+        int maxEvents = 1000;
 
         appender.setIncludeCallerData(includeCallerData);
         appender.setSleepTime(aSleepTime);
@@ -207,6 +207,7 @@ public class ElasticsearchAppenderTest {
         appender.setRawJsonMessage(rawJsonMessage);
         appender.setIncludeMdc(includeMdc);
         appender.setEnableContextMap(enableContextMap);
+        appender.setMaxEvents(maxEvents);
 
         verify(settings, times(1)).setReadTimeout(readTimeout);
         verify(settings, times(1)).setSleepTime(aSleepTime);
@@ -224,6 +225,7 @@ public class ElasticsearchAppenderTest {
         verify(settings, times(1)).setRawJsonMessage(rawJsonMessage);
         verify(settings, times(1)).setIncludeMdc(includeMdc);
         verify(settings, times(1)).setEnableContextMap(enableContextMap);
+        verify(settings, times(1)).setMaxEvents(maxEvents);
     }
 
 

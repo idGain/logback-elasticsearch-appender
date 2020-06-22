@@ -24,6 +24,7 @@ public class Settings {
     private Authentication authentication;
     private int maxMessageSize = -1;
     private boolean enableContextMap;
+    private int maxEvents = -1;
 
     public String getIndex() {
         return index;
@@ -170,5 +171,13 @@ public class Settings {
 
     public void setEnableContextMap(boolean enableContextMap) {
         this.enableContextMap = enableContextMap;
+    }
+
+    public int getMaxEvents() {
+        return maxEvents;
+    }
+
+    public void setMaxEvents(int maxEvents) {
+        this.maxEvents = maxEvents;
     }
 }
