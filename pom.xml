@@ -112,6 +112,7 @@
                     <tagNameFormat>v@{project.version}</tagNameFormat>
                     <useReleaseProfile>false</useReleaseProfile>
                     <releaseProfiles>release</releaseProfiles>
+                    <developmentVersion>${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}-SNAPSHOT</developmentVersion>
                 </configuration>
             </plugin>
             <plugin>
@@ -166,15 +167,25 @@
                 <gpg.publicKeyring>${env.GPG_DIR}/pubring.kbx</gpg.publicKeyring>
                 <gpg.secretKeyring>${env.GPG_DIR}/trustdb.gpg</gpg.secretKeyring>
             </properties>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>bintray-cy6ergn0m-maven</id>
-                    <name>bintray-plugins</name>
-                    <url>http://dl.bintray.com/cy6ergn0m/maven</url>
-                </pluginRepository>
-            </pluginRepositories>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>parse-versions-for-release</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>parse-version</goal>
+                                </goals>
+                                <configuration>
+                                    <propertyPrefix>parsedVersion</propertyPrefix>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
@@ -218,24 +229,6 @@
                                         <arg>loopback</arg>
                                     </gpgArguments>
                                 </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>cy.github</groupId>
-                        <artifactId>github-release-plugin</artifactId>
-                        <version>0.5.1</version>
-                        <configuration>
-                            <tagName>${project.version}</tagName>
-                            <releaseTitle>${project.artifactId}-${project.version}</releaseTitle>
-                            <serverId>github</serverId>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>gh-upload</goal>
-                                </goals>
-                                <phase>deploy</phase>
                             </execution>
                         </executions>
                     </plugin>

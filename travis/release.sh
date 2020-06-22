@@ -2,8 +2,5 @@
 
 set -e
 
-echo "Ensuring that pom  matches $TRAVIS_TAG"
-./mvnw org.codehaus.mojo:versions-maven-plugin:2.7:set -DnewVersion=$TRAVIS_TAG
-
-echo "Uploading to oss repo and GitHub"
-./mvnw deploy --settings .travis/settings.xml -DskipTests=true --batch-mode --update-snapshots -Prelease
+echo "Create release"
+./mvnw initialize release:clean release:prepare release:perform --settings ./travis/settings.xml -DreleaseVersion=$TRAVIS_TAG -DskipTests=true --batch-mode --update-snapshots -Prelease
