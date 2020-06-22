@@ -9,11 +9,6 @@
             <username>cgoit</username>
             <password>${env.BINTRAY_API_KEY}</password>
         </server>
-        <server>
-            <id>github</id>
-            <username>cgoIT</username>
-            <password>${env.GITHUB_TOKEN}</password>
-        </server>
     </servers>
 
     <profiles>
@@ -23,7 +18,16 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
+                <gpg.executable>gpg</gpg.executable>
+                <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
                 <gpg.passphrase>${env.GPG_PASSWORD}</gpg.passphrase>
+
+                <!-- tell gpg to NOT use the default keyring from the current user's home -->
+                <gpg.defaultKeyring>false</gpg.defaultKeyring>
+
+                <!-- instead tell gpg to use the keyrings from your GPG_DIR -->
+                <gpg.publicKeyring>${env.GPG_DIR}/pubring.auto</gpg.publicKeyring>
+                <gpg.secretKeyring>${env.GPG_DIR}/secring.auto</gpg.secretKeyring>
             </properties>
         </profile>
     </profiles>
