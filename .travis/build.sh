@@ -41,11 +41,21 @@ pushTagsAndCommit() {
     git push -u origin release
 }
 
-function fix_git {
+fix_git() {
     git checkout ${TRAVIS_BRANCH}
     git branch -u origin/${TRAVIS_BRANCH}
     git config branch.${TRAVIS_BRANCH}.remote origin
     git config branch.${TRAVIS_BRANCH}.merge refs/heads/${TRAVIS_BRANCH}
+}
+
+provide_gpg_keys() {
+  rm -rf ${GPG_DIR} && mkdir -p ${GPG_DIR}
+  openssl aes-256-cbc -K $encrypted_f3cb6cb238ed_key -iv $encrypted_f3cb6cb238ed_iv -in deploy/signingkey.asc.enc -out ${GPG_DIR}/signingkey.asc -d
+  gpg2 --keyring=${GPG_DIR}/pubring.gpg --no-default-keyring --import ${GPG_DIR}/signingkey.asc
+  gpg2 --allow-secret-key-import --keyring=${GPG_DIR}/secring.gpg --no-default-keyring  --import ${GPG_DIR}/signingkey.asc
+
+  gpg2 --list-keys
+  gpg2 --list-secret-keys
 }
 
 buildArtifact() {
@@ -56,6 +66,9 @@ buildArtifact() {
 
         exeinf "Fix git checkout"
         fix_git
+
+        exeinf "Provide gpg keys"
+        provide_gpg_keys
 
         exeinf "Performing maven release"
         mvn -B -s .travis/settings.xml clean release:prepare release:perform -DscmCommentPrefix="[skip ci] [maven-release-plugin] " -DcheckModificationExcludeList=.travis/*.sh -Prelease
