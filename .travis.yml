@@ -11,7 +11,7 @@ cache:
   - "$HOME/.cache"
   - "$HOME/.m2"
 before_deploy:
-- rm -rf ~/.gnupg && rm -rf ~/.gpg && rm -rf ${GPG_DIR} && mkdir -p ${GPG_DIR}
+- rm -rf ~/.gnupg && mkdir ~/.gnupg && rm -rf ~/.gpg && mkdir ~/.gpg && rm -rf ${GPG_DIR} && mkdir -p ${GPG_DIR}
 - openssl aes-256-cbc -K $encrypted_f3cb6cb238ed_key -iv $encrypted_f3cb6cb238ed_iv
   -in deploy/signingkey.asc.enc -out ${GPG_DIR}/signingkey.asc -d
 - gpg2 --keyring=${GPG_DIR}/pubring.gpg --no-default-keyring --import ${GPG_DIR}/signingkey.asc
