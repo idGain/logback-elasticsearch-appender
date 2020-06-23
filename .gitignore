@@ -5,6 +5,8 @@
 /target/
 /bin/
 
+deploy/*.asc
+
 *.iml
 *.jar
 *.class
