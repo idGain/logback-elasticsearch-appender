@@ -1,31 +1,57 @@
 language: java
 jdk:
 - openjdk8
+- openjdk11
+- openjdk12
 services:
 - docker
-script:
-- "./mvnw clean -B"
-- "./mvnw verify -B"
 cache:
   directories:
-  - "$HOME/.cache"
+  - ".autoconf"
   - "$HOME/.m2"
-before_deploy:
-- rm -rf ${GPG_DIR} && mkdir -p ${GPG_DIR}
+  - "$HOME/.cache"
+  - "$HOME/.gnupg"
+  - "$TRAVIS_BUILD_DIR/target"
+before_install:
 - openssl aes-256-cbc -K $encrypted_f3cb6cb238ed_key -iv $encrypted_f3cb6cb238ed_iv
   -in deploy/signingkey.asc.enc -out ${GPG_DIR}/signingkey.asc -d
 - gpg2 --keyring=${GPG_DIR}/pubring.gpg --no-default-keyring --import ${GPG_DIR}/signingkey.asc
 - gpg2 --allow-secret-key-import --keyring=${GPG_DIR}/secring.gpg --no-default-keyring
   --import ${GPG_DIR}/signingkey.asc
-deploy:
-  provider: script
-  script: chmod +x ./travis/release.sh && ./travis/release.sh
-  skip_cleanup: true
-  on:
-    tags: true
+script: ./mvnw verify -B
+jobs:
+  include:
+  - stage: Deploy to ossrh
     jdk: openjdk8
-after_deploy:
-- rm -rf ${GPG_DIR}
+    deploy:
+      provider: script
+      script: "chmod +x .travis/build.sh && .travis/build.sh"
+#  - stage: Tests and upload snapshot codecov, coveralls
+#    jdk: openjdk11
+#    script: mvn jacoco:report
+#    after_script:
+#      - bash <(curl -s https://codecov.io/bash)
+#      - mvn coveralls:report
+#  - stage: Build and push docker image
+#    jdk: openjdk11
+#    services: docker
+#    script: mvn docker:build
+#    after_script:
+#      - echo "$DOCKER_BINTRAY_API" | docker login -u "$DOCKER_USERNAME" --password-stdin
+#        parj-docker-public-docker.bintray.io
+#      - appVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+#      - echo "Version is ${appVersion}"
+#      - docker tag parjanya/samplespringbootapp:${appVersion} parj-docker-public-docker.bintray.io/samplespringbootapp:latest
+#      - docker push parj-docker-public-docker.bintray.io/samplespringbootapp:latest
+#deploy:
+#  provider: script
+#  script: chmod +x .travis/release.sh && .travis/release.sh
+#  skip_cleanup: true
+#  on:
+#    tags: true
+#    jdk: openjdk8
+#after_deploy:
+#- rm -rf ${GPG_DIR}
 env:
   global:
   - GPG_DIR="`pwd`/gpg"
