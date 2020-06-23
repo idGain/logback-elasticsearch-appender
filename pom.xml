@@ -26,8 +26,8 @@
 
     <scm>
         <url>https://github.com/cgoIT/logback-elasticsearch-appender</url>
-        <connection>scm:git:git@github.com:cgoIT/logback-elasticsearch-appender.git</connection>
-        <developerConnection>scm:git:git@github.com:cgoIT/logback-elasticsearch-appender.git</developerConnection>
+        <connection>scm:git:https://github.com/cgoIT/logback-elasticsearch-appender.git</connection>
+        <developerConnection>scm:git:https://github.com/cgoIT/logback-elasticsearch-appender.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
