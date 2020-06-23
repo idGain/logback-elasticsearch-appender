@@ -19,42 +19,17 @@ before_install:
 - gpg2 --keyring=${GPG_DIR}/pubring.gpg --no-default-keyring --import ${GPG_DIR}/signingkey.asc
 - gpg2 --allow-secret-key-import --keyring=${GPG_DIR}/secring.gpg --no-default-keyring
   --import ${GPG_DIR}/signingkey.asc
-script: ./mvnw verify -B
+script: "./mvnw verify -B"
 jobs:
   include:
-  - stage: Deploy to ossrh
+  - stage: Deploy to bintray
     jdk: openjdk8
     deploy:
       provider: script
-      script: "chmod +x .travis/build.sh && .travis/build.sh"
-#  - stage: Tests and upload snapshot codecov, coveralls
-#    jdk: openjdk11
-#    script: mvn jacoco:report
-#    after_script:
-#      - bash <(curl -s https://codecov.io/bash)
-#      - mvn coveralls:report
-#  - stage: Build and push docker image
-#    jdk: openjdk11
-#    services: docker
-#    script: mvn docker:build
-#    after_script:
-#      - echo "$DOCKER_BINTRAY_API" | docker login -u "$DOCKER_USERNAME" --password-stdin
-#        parj-docker-public-docker.bintray.io
-#      - appVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-#      - echo "Version is ${appVersion}"
-#      - docker tag parjanya/samplespringbootapp:${appVersion} parj-docker-public-docker.bintray.io/samplespringbootapp:latest
-#      - docker push parj-docker-public-docker.bintray.io/samplespringbootapp:latest
-#deploy:
-#  provider: script
-#  script: chmod +x .travis/release.sh && .travis/release.sh
-#  skip_cleanup: true
-#  on:
-#    tags: true
-#    jdk: openjdk8
-#after_deploy:
-#- rm -rf ${GPG_DIR}
+      script: chmod +x .travis/build.sh && .travis/build.sh
 env:
   global:
   - GPG_DIR="`pwd`/gpg"
   - secure: GDGSGOK9azg7A8ChNmhy1FZezUdzgZ1r8dh1k+/pcdzTInpGTaFtoj4KjXPqItEXIP4QJu95nV21kXQCHE5w8Iw/jj02gv3uU5F0XKko3IQrb+v3aaivPxUskh/M9nk8yCjH7EeRDE6yPQ6T+BWvuT6Y33bLhjSk1tjYDw+5fCyhlLp6MlLiaFTqFnW099v61ctdxJTQnDZFzFaa8bVwKMinYoByJTULmVnINOYXrqGU2RKAviRpmW2yHBSETq+MPY005cVIONLASDcpyVCj0TpfCBV1YEPTkIxhRwRrREz+ITm03MfnntIQwsw7Q5uNBTy2wx2wHZVKIXDDmWmQ+pA/3QeBAKm09SysmpLy1b2TB11ZoeH4vHEIDh5ncdiKr8AxDSVF2xBXsSu1TTew2jtDRSXTUWtbATPBTDH/khXTO3avPR0voNMNwn6RlI0AbMBgsiz/ve4AzI4LGXJhmyZRYuwz8YEaj+yB4DY1aiEeTIuAjejid+PLqkeqfKBMWzqicz+lCWgICp2qAmDVYEkeEopSWv2W+fGOng5uATGlIxx4HyVelO0z44H4i96jBqZEPjhKS+lniTxqIbjP7g3zfGlQEUIenbDtzK+lwqo0PRPXlfLPtiY+OOF8Lb6lRTnEPjuioGN7+WWfPn/m4JQ3l/9LMHnDBkogNPmC7MA=
   - secure: 6Bhp3GTFV1j50q3udTVYJnngidhMVnPfnOg7qaHZFl/iZy3pAKFsehJ+1qGC5j690pCT879/eXrtMsCLLSkLOo3oGglouhYD/4F5CNMkUjG0qdD1bOorvmCUDkKC5vJ/+UOnoXwpboDQ8mk/1tGp5D53deQRHJicZKAcTeBezF5QtEn83vp3P2fQJuh7p/2+7hGAoxTlCiju2NluoTTR+fDfNqtGof+A94FvauS8u4CYCvDdeBEooLHZpHXWgkALCQzoLz346kmkZeqjS3jnUH2pLoYVgraHQMoFVrYOTQZLq1ehg9fCZyQJTljYKPVsa5o9nLZkfiEFDCBrhI0CH+tkf4bK8QGwdK7Ru5QHrVpOmPdtIe37M9oUof1y1DK0x6Uo/w4hNNWCovP5n7pDCnJfsD05++Nt0SY9hYv10C3l3LBpHCf7Gf5LTfycgLvBAY+ojIp19g01PbLY34Adx/wqUMgf2ABQppqTWzgMH8zXwzMpdbj1xHov9AsYDTOCZzYVgMNP8Of92JoVDa+chCbusq1z5FOJRoCITqFL9gnktC7b+MDvrsew7d5IB2UYA24rIB1LbePBmGB2hwO0F9WG4XVsArXhq+62a+aB1UREtVvRwXDzkyaTPFgCq+LGxGa3W91r+uiXaJ0aIaRXijfGZC6joy66I34IekI7/sk=
+  - secure: KTmm59L4jSRBfY0Do3ASN3p+c5dcQOMy9sgWuT81LPLHu5ISNt1TyBa1p5Cl583dZ1qR2VTyC0I4xcXZYWH7HA+0a9k/UlJvSL4NXGxmXXS6N0QsmPDkpt5Vu7R/cWwuZvOLVlgDKnTUwtu1ZvD90dYcrEbqidtTeFXFGwZweXT+58yR1+knrVqf0W5jbiLSfKy+00AVzbnb1bzHNDplJnoVmhca/rStL8pNO+DfVXnLXWnNnfmyjWLqRXdiHpaBJE+UXBcFN1KnE4xUvy7mikFHsZ1lcA1AWSypFvlUo8KNv62M69/82PhxTYAHY/0jMtq7vrkTU918+sIzndl1M6rHqBoEZ/TF2ZWBhsvlxNyr7Z/bqreVwy0mvcbP5/CaxLNg3f2PS972ZMi6LzKoyXGaXEba27zovffX2cAcvuam+bFypCr5PriPcpTwWqscR+WOXAIDZyoGxzP4Is4bfTFVu5w4YcSHFyUBh8NW0QXCd/Tm4csuMnfrsOymjhuMiYTSyVFVDJvQwcD3ZhCFh4fTF2B4ROg+0mx8r9x8wPuyrbBmRB+05072LdDGAdRy4cCA0Y2k70Wa+NqI1LkTB2CKk9//eXPSGmeT1A6lnGir/sV4xci6isgduCiAB3vP/dLlaNBbmMQgp6+tkDgVVU7n1aNdRO5otmGGZIy4wBA=
