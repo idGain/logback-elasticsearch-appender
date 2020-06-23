@@ -71,7 +71,7 @@ buildArtifact() {
         provide_gpg_keys
 
         exeinf "Performing maven release"
-        mvn -B -s .travis/settings.xml clean release:prepare release:perform -DscmCommentPrefix="[skip ci] [maven-release-plugin] " -DcheckModificationExcludeList=.travis/*.sh -Prelease
+        mvn -B -s .travis/settings.xml clean initialize release:prepare release:perform -DscmCommentPrefix="[skip ci] [maven-release-plugin] " -DcheckModificationExcludeList=.travis/*.sh -Prelease
 
         pushTagsAndCommit
     else
