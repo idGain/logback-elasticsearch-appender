@@ -58,12 +58,12 @@ buildArtifact() {
         fix_git
 
         exeinf "Performing maven release"
-        ./mvnw -B -s .travis/settings.xml release:clean release:prepare release:perform -DscmCommentPrefix="[skip ci] [maven-release-plugin] " -DcheckModificationExcludeList=.travis/*.sh -Prelease
+        mvn -B -s .travis/settings.xml clean release:prepare release:perform -DscmCommentPrefix="[skip ci] [maven-release-plugin] " -DcheckModificationExcludeList=.travis/*.sh -Prelease
 
         pushTagsAndCommit
     else
         exeinf "Travis Snapshot build"
-        ./mvnw -s .travis/settings.xml package -Dgpg.skip
+        mvn -s .travis/settings.xml package -Dgpg.skip
     fi
 }
 
