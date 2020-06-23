@@ -4,7 +4,7 @@
 
     <groupId>de.cgoit</groupId>
     <artifactId>logback-elasticsearch-appender</artifactId>
-    <version>1.8-SNAPSHOT</version>
+    <version>1.7-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Logback Elasticsearch Appender</name>
@@ -223,7 +223,7 @@
     <distributionManagement>
         <repository>
             <id>bintray-maven-repo</id>
-            <url>https://api.bintray.com/maven/cgoit/maven/logback-elasticsearch-appender/;publish=1</url>
+            <url>https://api.bintray.com/maven/cgoit/maven/logback-elasticsearch-appender/</url>
         </repository>
     </distributionManagement>
 
