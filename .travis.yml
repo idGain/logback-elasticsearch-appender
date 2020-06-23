@@ -27,6 +27,8 @@ jobs:
     deploy:
       provider: script
       script: chmod +x .travis/build.sh && .travis/build.sh
+      on:
+        branch: release
 env:
   global:
   - GPG_DIR="`pwd`/gpg"
