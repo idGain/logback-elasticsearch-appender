@@ -21,14 +21,7 @@
                 <gpg.executable>gpg2</gpg.executable>
                 <gpg.homedir>${env.GPG_DIR}</gpg.homedir>
                 <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
-                <!--gpg.passphrase>${env.GPG_PASSWORD}</gpg.passphrase-->
-
-                <!-- tell gpg to NOT use the default keyring from the current user's home -->
-                <gpg.defaultKeyring>false</gpg.defaultKeyring>
-
-                <!-- instead tell gpg to use the keyrings from your GPG_DIR -->
-                <gpg.publicKeyring>pubring.gpg</gpg.publicKeyring>
-                <gpg.secretKeyring>secring.gpg</gpg.secretKeyring>
+                <gpg.defaultKeyring>true</gpg.defaultKeyring>
             </properties>
         </profile>
     </profiles>
