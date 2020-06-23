@@ -41,14 +41,24 @@ pushTagsAndCommit() {
     git push -u origin release
 }
 
+function fix_git {
+    git checkout ${TRAVIS_BRANCH}
+    git branch -u origin/${TRAVIS_BRANCH}
+    git config branch.${TRAVIS_BRANCH}.remote origin
+    git config branch.${TRAVIS_BRANCH}.merge refs/heads/${TRAVIS_BRANCH}
+}
+
 buildArtifact() {
     echo "Branch is ${BRANCH_NAME}"
 
     if [[ $TRAVIS_BRANCH == "release" ]]; then
         exeinf "Release build"
 
+        exeinf "Fix git checkout"
+        fix_git
+
         exeinf "Performing maven release"
-        ./mvnw -B -s .travis/settings.xml release:clean release:prepare release:perform -DscmCommentPrefix="[skip ci] [maven-release-plugin] " -DcheckModificationExcludeList=.travis/*.sh
+        ./mvnw -B -s .travis/settings.xml release:clean release:prepare release:perform -DscmCommentPrefix="[skip ci] [maven-release-plugin] " -DcheckModificationExcludeList=.travis/*.sh -Prelease
 
         pushTagsAndCommit
     else
