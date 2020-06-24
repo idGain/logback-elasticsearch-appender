@@ -222,8 +222,9 @@
 
     <distributionManagement>
         <repository>
-            <id>bintray-maven-repo</id>
-            <url>https://api.bintray.com/maven/cgoit/maven/logback-elasticsearch-appender/</url>
+            <id>bintray-cgoit-maven</id>
+            <name>cgoit-maven</name>
+            <url>https://api.bintray.com/maven/cgoit/maven/logback-elasticsearch-appender/;publish=1</url>
         </repository>
     </distributionManagement>
 

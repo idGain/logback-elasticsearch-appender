@@ -73,6 +73,10 @@ EOP
 
 on_failure() {
     exeinf "Rollback release"
+
+    version=$(get_version)
+    delete_tag "${version}"
+
     mvn -B -s .travis/settings.xml release:rollback -DscmCommentPrefix="[skip ci] [maven-release-plugin] " -DcheckModificationExcludeList=.travis/*.sh -Prelease
 }
 
