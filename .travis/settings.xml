@@ -5,7 +5,7 @@
 
     <servers>
         <server>
-            <id>bintray-maven-repo</id>
+            <id>bintray-cgoit-maven</id>
             <username>cgoit</username>
             <password>${env.BINTRAY_API_KEY}</password>
         </server>
