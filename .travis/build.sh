@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# Stop on error
-set -e
-
 main() {
     init
     setup_git
@@ -75,10 +72,8 @@ EOP
 }
 
 on_failure() {
-    exeinf "Delete tag"
-
-    version="$(get_version)"
-    delete_tag "${version}"
+    exeinf "Rollback release"
+    mvn -B -s .travis/settings.xml release:rollback -DscmCommentPrefix="[skip ci] [maven-release-plugin] " -DcheckModificationExcludeList=.travis/*.sh -Prelease
 }
 
 on_success() {
@@ -108,7 +103,7 @@ buildArtifact() {
           exeinf 'Release build successful.'
           on_success
         else
-          exeerr 'Release build not successful. Cleanup';
+          exeerr 'Release build not successful. Rollback...';
           on_failure
           exit $rc
         fi
