@@ -64,7 +64,7 @@ create_pull_request() {
   local version="$1"
   payload=$( cat <<- EOP
         {
-          "title": "[maven-release-plugin] Integrate changes from release ${version}",
+          "title": "[skip ci] [maven-release-plugin] Integrate changes from release ${version}",
           "body": "Please pull these changes from release build!",
           "head": "release",
           "base": "master"
