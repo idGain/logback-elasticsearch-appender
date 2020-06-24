@@ -99,7 +99,7 @@ buildArtifact() {
         mvn -B -s .travis/settings.xml clean initialize release:prepare release:perform -DscmCommentPrefix="[skip ci] [maven-release-plugin] " -DcheckModificationExcludeList=.travis/*.sh -Prelease
         rc="$?"
 
-        if [[ "$rc" -ne 0 ]] ; then
+        if [[ "$rc" -eq 0 ]] ; then
           exeinf 'Release build successful.'
           on_success
         else
