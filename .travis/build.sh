@@ -91,7 +91,7 @@ on_success() {
 buildArtifact() {
     echo "Branch is ${BRANCH_NAME}"
 
-    if [[ $TRAVIS_BRANCH == "release" ]]; then
+    if [[ "$TRAVIS_BRANCH" == "release" && "$TRAVIS_PULL_REQUEST" == "false" ]]; then
         exeinf "Release build"
 
         exeinf "Fix git checkout"
@@ -113,7 +113,7 @@ buildArtifact() {
           exit $rc
         fi
     else
-        exeinf "Travis Snapshot build"
+        exeinf "Travis snapshot build"
         mvn -s .travis/settings.xml package -Dgpg.skip
     fi
 }
