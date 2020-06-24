@@ -17,6 +17,8 @@ jobs:
   include:
   - stage: Deploy to bintray
     jdk: openjdk8
+    script: skip
+    if: branch = release
     deploy:
       provider: script
       script: chmod +x .travis/build.sh && .travis/build.sh

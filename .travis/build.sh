@@ -34,13 +34,6 @@ setup_git() {
     git config --global user.name "Carsten Götzinger"
 }
 
-pushTagsAndCommit() {
-    exeinf "Pushing tags"
-    git push --tags
-    exeinf "Pushing maven commit"
-    git push -u origin release
-}
-
 fix_git() {
     git checkout ${TRAVIS_BRANCH}
     git branch -u origin/${TRAVIS_BRANCH}
@@ -58,6 +51,43 @@ provide_gpg_keys() {
   gpg2 --list-secret-keys
 }
 
+get_version() {
+  mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -q -DforceStdout
+}
+
+delete_tag() {
+  local version="$1"
+  git push --delete origin v${version}
+}
+
+create_pull_request() {
+  local version="$1"
+  payload=$( cat <<- EOP
+        {
+          "title": "[maven-release-plugin] Integrate changes from release ${version}",
+          "body": "Please pull these changes from release build!",
+          "head": "release",
+          "base": "master"
+        }
+EOP
+)
+  curl -s -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" -d "${payload}" https://api.github.com/repos/cgoIT/logback-elasticsearch-appender/pulls
+}
+
+on_failure() {
+    exeinf "Delete tag"
+
+    version="$(get_version)"
+    delete_tag "${version}"
+}
+
+on_success() {
+    exeinf 'Create pull request'
+
+    version="$(get_version)"
+    create_pull_request "${version}"
+}
+
 buildArtifact() {
     echo "Branch is ${BRANCH_NAME}"
 
@@ -72,8 +102,16 @@ buildArtifact() {
 
         exeinf "Performing maven release"
         mvn -B -s .travis/settings.xml clean initialize release:prepare release:perform -DscmCommentPrefix="[skip ci] [maven-release-plugin] " -DcheckModificationExcludeList=.travis/*.sh -Prelease
+        rc="$?"
 
-        pushTagsAndCommit
+        if [[ "$rc" -ne 0 ]] ; then
+          exeinf 'Release build successful.'
+          on_success
+        else
+          exeerr 'Release build not successful. Cleanup';
+          on_failure
+          exit $rc
+        fi
     else
         exeinf "Travis Snapshot build"
         mvn -s .travis/settings.xml package -Dgpg.skip
