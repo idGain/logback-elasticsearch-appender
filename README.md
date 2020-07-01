@@ -148,7 +148,7 @@ Authentication
 
 Authentication is a pluggable mechanism. You must specify the authentication class on the XML element itself. The currently supported classes are:
 
-* `BasicAuthentication` - Username and password are taken from the URL (i.e. `http://username:password@yourserver/_bulk`). As an alternative you could use the constructor which accepts a username and a password as parameters (if using this method you could use environment variables like '${env.MY_VERY_SECRET_PASSWORD}').
+* `BasicAuthentication` - Username and password are taken from the URL (i.e. `http://username:password@yourserver/_bulk`). As an alternative you could use the constructor which accepts a username and a password as parameters (if using this method and logback.groovy you could use environment variables like '${env.MY_VERY_SECRET_PASSWORD}').
 * `AWSAuthentication` - Authenticate using the AWS SDK, for use with the [Amazon Elasticsearch Service](https://aws.amazon.com/elasticsearch-service/) (note that you will also need to include `com.amazonaws:aws-java-sdk-core` as a dependency)
 
 Logback Access
