@@ -1,7 +1,7 @@
 Logback Elasticsearch Appender
 ===============================
 
-[![Build Status](https://travis-ci.org/cgoIT/logback-elasticsearch-appender.svg?branch=master)](https://travis-ci.org/cgoIT/logback-elasticsearch-appender)
+[![Build Status](https://travis-ci.org/cgoIT/logback-elasticsearch-appender.svg?branch=master)](https://travis-ci.org/cgoIT/logback-elasticsearch-appender) [ ![Download](https://api.bintray.com/packages/cgoit/maven/logback-elasticsearch-appender/images/download.svg) ](https://bintray.com/cgoit/maven/logback-elasticsearch-appender/_latestVersion)
 
 Send log events directly from Logback to Elasticsearch. Logs are delivered asynchronously (i.e. not on the main thread) so will not block execution of the program. Note that the queue backlog can be bounded and messages *can* be lost if Elasticsearch is down and either the backlog queue is full or the producer program is trying to exit (it will retry up to a configured number of attempts, but will not block shutdown of the program beyond that). For long-lived programs, this should not be a problem, as messages should be delivered eventually.
 
@@ -16,7 +16,7 @@ In your `pom.xml` (or equivalent), add:
      <dependency>
         <groupId>de.cgoit</groupId>
         <artifactId>logback-elasticsearch-appender</artifactId>
-        <version>2.0</version>
+        <version>1.8</version>
      </dependency>
 
 In your `logback.xml`:
@@ -148,7 +148,7 @@ Authentication
 
 Authentication is a pluggable mechanism. You must specify the authentication class on the XML element itself. The currently supported classes are:
 
-* `BasicAuthentication` - Username and password are taken from the URL (i.e. `http://username:password@yourserver/_bulk`)
+* `BasicAuthentication` - Username and password are taken from the URL (i.e. `http://username:password@yourserver/_bulk`). As an alternative you could use the constructor which accepts a username and a password as parameters (if using this method you could use environment variables like '${env.MY_VERY_SECRET_PASSWORD}').
 * `AWSAuthentication` - Authenticate using the AWS SDK, for use with the [Amazon Elasticsearch Service](https://aws.amazon.com/elasticsearch-service/) (note that you will also need to include `com.amazonaws:aws-java-sdk-core` as a dependency)
 
 Logback Access
