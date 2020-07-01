@@ -137,7 +137,7 @@ If you configure logback using `logback.groovy`, this can be configured as follo
       	errorsToStderr = true
       	authentication = new BasicAuthentication()
       	def configHeaders = new HttpRequestHeaders()
-      	configHeaders.addHeader(new HttpRequestHeader(name: 'Content-Type', value: 'text/plain'))
+      	configHeaders.addHeader(new HttpRequestHeader(name: 'Content-Type', value: 'application/x-ndjson'))
       	headers = configHeaders
       }
 
