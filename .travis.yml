@@ -11,6 +11,7 @@ cache:
   - "$HOME/.cache"
   - "$HOME/.gnupg"
   - "$TRAVIS_BUILD_DIR/target"
+before_install: git fetch --unshallow
 script: mvn -Dsonar.login=$SONAR_LOGIN verify sonar:sonar -B
 jobs:
   include:
