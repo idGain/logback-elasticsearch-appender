@@ -49,6 +49,9 @@
     <project.scm.id>github</project.scm.id>
     <jacoco.it.execution.data.file>${project.build.directory}/coverage-reports/jacoco-it.exec</jacoco.it.execution.data.file>
     <jacoco.ut.execution.data.file>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco.ut.execution.data.file>
+    <sonar.dependencyCheck.reportPath>${project.build.directory}/dependency-check-report.xml</sonar.dependencyCheck.reportPath>
+    <sonar.dependencyCheck.htmlReportPath>${project.build.directory}/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
+    <sonar.dependencyCheck.jsonReportPath>${project.build.directory}/dependency-check-report.json</sonar.dependencyCheck.jsonReportPath>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -242,6 +245,11 @@
           <artifactId>sortpom-maven-plugin</artifactId>
           <version>2.11.0</version>
         </plugin>
+        <plugin>
+          <groupId>org.owasp</groupId>
+          <artifactId>dependency-check-maven</artifactId>
+          <version>5.3.2</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -302,6 +310,13 @@
           <systemPropertyVariables>
             <jacoco-agent.destfile>${project.build.directory}/coverage.exec</jacoco-agent.destfile>
           </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <configuration>
+          <format>ALL</format>
         </configuration>
       </plugin>
     </plugins>
