@@ -435,14 +435,5 @@
         </plugins>
       </build>
     </profile>
-    <profile>
-      <id>sonar</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <sonar.project.key>logback-elasticsearch-appender</sonar.project.key>
-      </properties>
-    </profile>
   </profiles>
 </project>
