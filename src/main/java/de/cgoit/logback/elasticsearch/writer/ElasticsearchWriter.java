@@ -22,20 +22,18 @@ import java.util.Set;
 
 public class ElasticsearchWriter implements SafeWriter {
 
-    private final StringBuilder sendBuffer;
-
-    private final ErrorReporter errorReporter;
-    private final Settings settings;
-    private final Collection<HttpRequestHeader> headerList;
-
-    private boolean bufferExceeded;
-
     private static final ObjectReader objectReader;
 
     static {
         ObjectMapper mapper = new ObjectMapper();
         objectReader = mapper.readerFor(Map.class);
     }
+
+    private final StringBuilder sendBuffer;
+    private final ErrorReporter errorReporter;
+    private final Settings settings;
+    private final Collection<HttpRequestHeader> headerList;
+    private boolean bufferExceeded;
 
     public ElasticsearchWriter(ErrorReporter errorReporter, Settings settings, HttpRequestHeaders headers) {
         this.errorReporter = errorReporter;

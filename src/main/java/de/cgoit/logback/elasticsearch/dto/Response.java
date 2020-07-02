@@ -30,7 +30,7 @@ public class Response {
     }
 
     public List<Map<String, Object>> getItems() {
-        return (List<Map<String, Object>>)response.get(ITEMS);
+        return (List<Map<String, Object>>) response.get(ITEMS);
     }
 
     public Map<Integer, Map<String, Object>> getFailedItems() {
@@ -45,7 +45,7 @@ public class Response {
         for (int i = 0; i < itemSize; i++) {
             Map<String, Object> item = items.get(i);
             Map<String, Object> entry = (Map<String, Object>) item.get(INDEX);
-            if ((int)entry.get(STATUS) != HttpStatus.SC_CREATED) {
+            if ((int) entry.get(STATUS) != HttpStatus.SC_CREATED) {
                 result.put(i, entry);
             }
         }

@@ -3,6 +3,7 @@ package de.cgoit.logback.elasticsearch;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Context;
+import de.cgoit.logback.elasticsearch.config.BasicAuthentication;
 import de.cgoit.logback.elasticsearch.config.ElasticsearchProperties;
 import de.cgoit.logback.elasticsearch.config.Settings;
 import de.cgoit.logback.elasticsearch.util.ErrorReporter;
@@ -17,8 +18,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -192,6 +193,8 @@ public class ElasticsearchAppenderTest {
         int connectTimeout = 5000;
         boolean enableContextMap = true;
         int maxEvents = 1000;
+        BasicAuthentication ba = new BasicAuthentication();
+        int maxMessageSize = -1;
 
         appender.setIncludeCallerData(includeCallerData);
         appender.setSleepTime(aSleepTime);
@@ -212,6 +215,8 @@ public class ElasticsearchAppenderTest {
         appender.setExcludedMdcKeys(excludedMdcKeys);
         appender.setEnableContextMap(enableContextMap);
         appender.setMaxEvents(maxEvents);
+        appender.setAuthentication(ba);
+        appender.setMaxMessageSize(maxMessageSize);
 
         verify(settings, times(1)).setReadTimeout(readTimeout);
         verify(settings, times(1)).setSleepTime(aSleepTime);
@@ -232,6 +237,8 @@ public class ElasticsearchAppenderTest {
         verify(settings, times(1)).setExcludedMdcKeys(excludedMdcKeys);
         verify(settings, times(1)).setEnableContextMap(enableContextMap);
         verify(settings, times(1)).setMaxEvents(maxEvents);
+        verify(settings, times(1)).setAuthentication(ba);
+        verify(settings, times(1)).setMaxMessageSize(maxMessageSize);
     }
 
 

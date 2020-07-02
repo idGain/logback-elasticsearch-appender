@@ -24,6 +24,10 @@ public class BasicAuthentication implements Authentication {
         this.password = resolveEnvVariable(password);
     }
 
+    static String getFromEnv(String envVariableName) {
+        return System.getenv(envVariableName);
+    }
+
     @Override
     public void addAuth(HttpURLConnection urlConnection, String body) {
         if (authFromUrl) {
@@ -52,9 +56,5 @@ public class BasicAuthentication implements Authentication {
             }
         }
         return resolved;
-    }
-
-    static String getFromEnv(String envVariableName) {
-        return System.getenv(envVariableName);
     }
 }

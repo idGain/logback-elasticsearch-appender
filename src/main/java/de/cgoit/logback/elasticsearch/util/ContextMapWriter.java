@@ -12,22 +12,6 @@ import java.util.Objects;
 
 public class ContextMapWriter {
 
-    public void writeContextMap(JsonGenerator gen, ILoggingEvent event) throws IOException {
-        Object[] arguments = event.getArgumentArray();
-        if (arguments == null || arguments.length == 0) {
-            return;
-        }
-        Object lastElement = arguments[arguments.length - 1];
-        if (lastElement instanceof Map) {
-            Map<String, Object> indexes = traverseMap(new HashMap<>(), "context", (Map<Object, Object>)lastElement);
-            for (Map.Entry<String, Object> entry : indexes.entrySet()) {
-                String key = entry.getKey();
-                Object value = entry.getValue();
-                gen.writeObjectField(key, value);
-            }
-        }
-    }
-
     static void traverseObject(Map<String, Object> accumulator, String context, Object object) {
         if (object == null) {
             return;
@@ -58,5 +42,21 @@ public class ContextMapWriter {
             traverseObject(accumulator, context + "." + entry.getKey(), entry.getValue());
         }
         return accumulator;
+    }
+
+    public void writeContextMap(JsonGenerator gen, ILoggingEvent event) throws IOException {
+        Object[] arguments = event.getArgumentArray();
+        if (arguments == null || arguments.length == 0) {
+            return;
+        }
+        Object lastElement = arguments[arguments.length - 1];
+        if (lastElement instanceof Map) {
+            Map<String, Object> indexes = traverseMap(new HashMap<>(), "context", (Map<Object, Object>) lastElement);
+            for (Map.Entry<String, Object> entry : indexes.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                gen.writeObjectField(key, value);
+            }
+        }
     }
 }

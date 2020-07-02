@@ -32,7 +32,7 @@ public class ContextMapWriterTest {
     @Test
     public void should_write_if_last_element_is_map() throws IOException {
         LoggingEvent event = new LoggingEvent();
-        event.setArgumentArray(new Object[] {"123", ImmutableMap.of("test", 123, "test2", "foo")});
+        event.setArgumentArray(new Object[]{"123", ImmutableMap.of("test", 123, "test2", "foo")});
         contextMapWriter.writeContextMap(jsonGenerator, event);
         verify(jsonGenerator, times(1)).writeObjectField("context.test", 123);
         verify(jsonGenerator, times(1)).writeObjectField("context.test2", "foo");

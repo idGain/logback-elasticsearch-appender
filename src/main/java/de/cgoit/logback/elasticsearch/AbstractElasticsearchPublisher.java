@@ -10,11 +10,9 @@ import de.cgoit.logback.elasticsearch.config.Settings;
 import de.cgoit.logback.elasticsearch.util.AbstractPropertyAndEncoder;
 import de.cgoit.logback.elasticsearch.util.ErrorReporter;
 import de.cgoit.logback.elasticsearch.writer.ElasticsearchWriter;
+import de.cgoit.logback.elasticsearch.writer.FailedEventsWriter;
 import de.cgoit.logback.elasticsearch.writer.LoggerWriter;
 import de.cgoit.logback.elasticsearch.writer.StdErrWriter;
-import de.cgoit.logback.elasticsearch.writer.FailedEventsWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -35,8 +33,6 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
     );
     private final Object lock;
     private final PropertySerializer<T> propertySerializer;
-    protected Settings settings;
-    private volatile List<T> events;
     private final ElasticsearchOutputAggregator outputAggregator;
     private final List<AbstractPropertyAndEncoder<T>> propertyList;
     private final AbstractPropertyAndEncoder<T> indexPattern;
@@ -45,6 +41,8 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
     private final JsonGenerator failedEventsJsonGenerator;
     private final FailedEventsWriter failedEventsWriter;
     private final ErrorReporter errorReporter;
+    protected Settings settings;
+    private volatile List<T> events;
     private volatile boolean working;
 
     public AbstractElasticsearchPublisher(Context context, ErrorReporter errorReporter, Settings settings, ElasticsearchProperties properties, HttpRequestHeaders headers) throws IOException {
@@ -118,7 +116,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
             events.add(event);
             if (max > 0 && events.size() > max) {
                 errorReporter.logWarning("Max events in queue reached - log messages will be lost until the queue is processed");
-                ((LinkedList<T>)events).removeFirst();
+                ((LinkedList<T>) events).removeFirst();
             }
             if (!working) {
                 working = true;
@@ -167,7 +165,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
                 try {
                     Set<Integer> failedIndices = outputAggregator.sendData();
                     if (!failedIndices.isEmpty() && eventsCopy != null && failedEventsJsonGenerator != null) {
-                        for (Integer idx: failedIndices) {
+                        for (Integer idx : failedIndices) {
                             if (idx < eventsCopy.size() - 1) {
                                 T event = eventsCopy.get(idx);
                                 serializeIndexString(failedEventsJsonGenerator, event);

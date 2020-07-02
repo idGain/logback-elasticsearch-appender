@@ -84,11 +84,11 @@
     </appender>
 
     <logger name="ES_LOGGER" level="debug" additivity="false">
-        <appender-ref ref="ES_APPENDER" />
+        <appender-ref ref="ES_APPENDER"/>
     </logger>
 
     <logger name="ES_RAW_LOGGER" level="debug" additivity="false">
-        <appender-ref ref="ES_RAW_APPENDER" />
+        <appender-ref ref="ES_RAW_APPENDER"/>
     </logger>
 
     <logger name="es-logger" level="INFO" additivity="false">
@@ -98,7 +98,8 @@
             <!-- set immediateFlush to false for much higher logging throughput -->
             <immediateFlush>true</immediateFlush>
             <encoder>
-                <pattern>%msg</pattern> <!-- This pattern is important, otherwise it won't be the raw Elasticsearch format anyomre -->
+                <pattern>%msg
+                </pattern> <!-- This pattern is important, otherwise it won't be the raw Elasticsearch format anyomre -->
             </encoder>
         </appender>
     </logger>
@@ -110,17 +111,18 @@
             <!-- set immediateFlush to false for much higher logging throughput -->
             <immediateFlush>true</immediateFlush>
             <encoder>
-                <pattern>%msg</pattern> <!-- This pattern is important, otherwise it won't be the raw Elasticsearch format anyomre -->
+                <pattern>%msg
+                </pattern> <!-- This pattern is important, otherwise it won't be the raw Elasticsearch format anyomre -->
             </encoder>
         </appender>
     </logger>
 
     <logger name="de.cgoit" level="debug" additivity="false">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT"/>
     </logger>
 
     <root level="info">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT"/>
     </root>
 
 </configuration>
