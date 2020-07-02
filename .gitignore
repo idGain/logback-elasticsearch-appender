@@ -7,6 +7,8 @@
 
 deploy/*.asc
 
+/generate*
+
 *.bak
 *.iml
 *.jar
