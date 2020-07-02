@@ -20,7 +20,7 @@ public class ElasticesearchPublisherTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticesearchPublisherTest.class);
     private static final String LOGGER_NAME = "es-logger";
-    private static final int MAX_EVENTS = 100_000;
+    private static final int MAX_EVENTS = 10_000;
     @Mock
     private ClassicElasticsearchPublisher elasticsearchPublisher;
     @Mock
