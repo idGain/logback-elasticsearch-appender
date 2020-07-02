@@ -13,7 +13,7 @@ cache:
   - "$TRAVIS_BUILD_DIR/target"
 before_install: git fetch --unshallow
 script: mvn -s .travis/settings.xml -Dsonar.login=$SONAR_LOGIN -Dsonar.projectKey=logback-elasticsearch-appender
-  -Dsonar.host.url=$SONAR_HOST_URL clean verify dependencyCheck:check sonar:sonar -B
+  -Dsonar.host.url=$SONAR_HOST_URL clean verify dependency-check:check sonar:sonar -B
 jobs:
   include:
   - stage: Deploy to bintray
