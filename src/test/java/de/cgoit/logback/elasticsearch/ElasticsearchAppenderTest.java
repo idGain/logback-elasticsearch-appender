@@ -178,6 +178,7 @@ public class ElasticsearchAppenderTest {
         boolean errorsToStderr = false;
         boolean rawJsonMessage = false;
         boolean includeMdc = true;
+        String excludedMdcKeys = "stacktrace,url";
         String index = "app-logs";
         String type = "appenderType";
         int maxQueueSize = 10;
@@ -206,6 +207,7 @@ public class ElasticsearchAppenderTest {
         appender.setConnectTimeout(connectTimeout);
         appender.setRawJsonMessage(rawJsonMessage);
         appender.setIncludeMdc(includeMdc);
+        appender.setExcludedMdcKeys(excludedMdcKeys);
         appender.setEnableContextMap(enableContextMap);
         appender.setMaxEvents(maxEvents);
 
@@ -224,6 +226,7 @@ public class ElasticsearchAppenderTest {
         verify(settings, times(1)).setConnectTimeout(connectTimeout);
         verify(settings, times(1)).setRawJsonMessage(rawJsonMessage);
         verify(settings, times(1)).setIncludeMdc(includeMdc);
+        verify(settings, times(1)).setExcludedMdcKeys(excludedMdcKeys);
         verify(settings, times(1)).setEnableContextMap(enableContextMap);
         verify(settings, times(1)).setMaxEvents(maxEvents);
     }

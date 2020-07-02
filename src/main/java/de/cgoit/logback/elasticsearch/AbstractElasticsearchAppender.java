@@ -126,6 +126,10 @@ public abstract class AbstractElasticsearchAppender<T> extends UnsynchronizedApp
         settings.setIncludeMdc(includeMdc);
     }
 
+    public void setExcludedMdcKeys(String setExcludedMdcKeys) {
+        settings.setExcludedMdcKeys(setExcludedMdcKeys);
+    }
+
     public void setAuthentication(Authentication auth) {
         settings.setAuthentication(auth);
     }
