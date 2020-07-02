@@ -43,8 +43,52 @@
         </headers>
     </appender>
 
+    <appender name="ES_RAW_APPENDER" class="de.cgoit.logback.elasticsearch.ElasticsearchAppender">
+        <url>http://localhost:9200/_bulk</url>
+        <index>logs-%date{yyyy-MM-dd}</index>
+        <type>tester</type>
+        <loggerName>es-logger</loggerName> <!-- optional -->
+        <errorLoggerName>es-error-logger</errorLoggerName> <!-- optional -->
+        <failedEventsLoggerName>es-failed-events</failedEventsLoggerName> <!-- optional -->
+        <includeMdc>true</includeMdc> <!-- optional (default false) -->
+        <rawJsonMessage>true</rawJsonMessage>
+        <properties>
+            <property>
+                <name>host</name>
+                <value>${HOSTNAME}</value>
+                <allowEmpty>false</allowEmpty>
+            </property>
+            <property>
+                <name>severity</name>
+                <value>%level</value>
+            </property>
+            <property>
+                <name>thread</name>
+                <value>%thread</value>
+            </property>
+            <property>
+                <name>stacktrace</name>
+                <value>%ex</value>
+            </property>
+            <property>
+                <name>logger</name>
+                <value>%logger</value>
+            </property>
+        </properties>
+        <headers>
+            <header>
+                <name>Content-Type</name>
+                <value>application/x-ndjson</value>
+            </header>
+        </headers>
+    </appender>
+
     <logger name="ES_LOGGER" level="debug" additivity="false">
-        <appender-ref ref="ES_APPENDER" />
+        <appender-ref ref="ES_APPENDER"/>
+    </logger>
+
+    <logger name="ES_RAW_LOGGER" level="debug" additivity="false">
+        <appender-ref ref="ES_RAW_APPENDER"/>
     </logger>
 
     <logger name="es-logger" level="INFO" additivity="false">
@@ -54,17 +98,31 @@
             <!-- set immediateFlush to false for much higher logging throughput -->
             <immediateFlush>true</immediateFlush>
             <encoder>
-                <pattern>%msg</pattern> <!-- This pattern is important, otherwise it won't be the raw Elasticsearch format anyomre -->
+                <pattern>%msg
+                </pattern> <!-- This pattern is important, otherwise it won't be the raw Elasticsearch format anyomre -->
+            </encoder>
+        </appender>
+    </logger>
+
+    <logger name="es-failed-events" level="INFO" additivity="false">
+        <appender name="ES_FILE" class="ch.qos.logback.core.FileAppender">
+            <file>target/logs/es-failed-events.log</file>
+            <append>false</append>
+            <!-- set immediateFlush to false for much higher logging throughput -->
+            <immediateFlush>true</immediateFlush>
+            <encoder>
+                <pattern>%msg
+                </pattern> <!-- This pattern is important, otherwise it won't be the raw Elasticsearch format anyomre -->
             </encoder>
         </appender>
     </logger>
 
     <logger name="de.cgoit" level="debug" additivity="false">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT"/>
     </logger>
 
     <root level="info">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT"/>
     </root>
 
 </configuration>

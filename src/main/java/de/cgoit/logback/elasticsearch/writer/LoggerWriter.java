@@ -3,6 +3,8 @@ package de.cgoit.logback.elasticsearch.writer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
+
 public class LoggerWriter implements SafeWriter {
 
     private final String loggerName;
@@ -13,6 +15,7 @@ public class LoggerWriter implements SafeWriter {
         this.loggerName = loggerName;
     }
 
+    @Override
     public void write(char[] cbuf, int off, int len) {
         if (logger == null) {
             logger = LoggerFactory.getLogger(loggerName);
@@ -23,10 +26,13 @@ public class LoggerWriter implements SafeWriter {
         }
     }
 
-    public void sendData() {
+    @Override
+    public Set<Integer> sendData() {
         // No-op
+        return null;
     }
 
+    @Override
     public boolean hasPendingData() {
         return false;
     }

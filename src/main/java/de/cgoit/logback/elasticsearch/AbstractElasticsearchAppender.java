@@ -59,6 +59,10 @@ public abstract class AbstractElasticsearchAppender<T> extends UnsynchronizedApp
     protected abstract void appendInternal(T eventObject);
 
     public void setProperties(ElasticsearchProperties elasticsearchProperties) {
+        setElasticsearchProperties(elasticsearchProperties);
+    }
+
+    public void setElasticsearchProperties(ElasticsearchProperties elasticsearchProperties) {
         this.elasticsearchProperties = elasticsearchProperties;
     }
 
@@ -114,6 +118,10 @@ public abstract class AbstractElasticsearchAppender<T> extends UnsynchronizedApp
         settings.setErrorLoggerName(logger);
     }
 
+    public void setFailedEventsLoggerName(String logger) {
+        settings.setFailedEventsLoggerName(logger);
+    }
+
     public void setHeaders(HttpRequestHeaders httpRequestHeaders) {
         this.headers = httpRequestHeaders;
     }
@@ -124,6 +132,10 @@ public abstract class AbstractElasticsearchAppender<T> extends UnsynchronizedApp
 
     public void setIncludeMdc(boolean includeMdc) {
         settings.setIncludeMdc(includeMdc);
+    }
+
+    public void setExcludedMdcKeys(String setExcludedMdcKeys) {
+        settings.setExcludedMdcKeys(setExcludedMdcKeys);
     }
 
     public void setAuthentication(Authentication auth) {

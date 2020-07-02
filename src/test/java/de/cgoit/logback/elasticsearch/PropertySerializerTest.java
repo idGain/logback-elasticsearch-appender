@@ -17,16 +17,13 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PropertySerializerTest {
+    private final PropertySerializer<ILoggingEvent> propertySerializer = new PropertySerializer<>();
     @Mock
     private Context context;
-
     @Mock
     private JsonGenerator jsonGenerator;
-
     @Mock
     private ILoggingEvent loggingEvent;
-
-    private final PropertySerializer<ILoggingEvent> propertySerializer = new PropertySerializer<>();
 
     @Test
     public void should_default_to_string_type() throws Exception {
@@ -149,7 +146,7 @@ public class PropertySerializerTest {
     }
 
     @Test
-    public void should_serialize_object_as_raw_json()  throws Exception {
+    public void should_serialize_object_as_raw_json() throws Exception {
         Property property = new Property();
         property.setName("args");
         property.setValue("{\"name\": \"value\", \"serial\": 1} ");
@@ -164,7 +161,7 @@ public class PropertySerializerTest {
     }
 
     @Test
-    public void should_serialize_empty_object()  throws Exception {
+    public void should_serialize_empty_object() throws Exception {
         Property property = new Property();
         property.setName("args");
         property.setValue("");
@@ -179,7 +176,7 @@ public class PropertySerializerTest {
     }
 
     @Test
-    public void should_serialize_invalid_object_as_text()  throws Exception {
+    public void should_serialize_invalid_object_as_text() throws Exception {
         Property property = new Property();
         property.setName("args2");
         property.setValue("{\"name\": \"value\"");

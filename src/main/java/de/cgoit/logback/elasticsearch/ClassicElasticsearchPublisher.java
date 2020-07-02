@@ -13,6 +13,8 @@ import de.cgoit.logback.elasticsearch.util.ContextMapWriter;
 import de.cgoit.logback.elasticsearch.util.ErrorReporter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class ClassicElasticsearchPublisher extends AbstractElasticsearchPublisher<ILoggingEvent> {
@@ -49,13 +51,32 @@ public class ClassicElasticsearchPublisher extends AbstractElasticsearchPublishe
         }
 
         if (settings.isIncludeMdc()) {
+            List<String> excludedKeys = getExcludedMdcKeys();
             for (Map.Entry<String, String> entry : event.getMDCPropertyMap().entrySet()) {
-                gen.writeObjectField(entry.getKey(), entry.getValue());
+                if (!excludedKeys.contains(entry.getKey())) {
+                    gen.writeObjectField(entry.getKey(), entry.getValue());
+                }
             }
         }
 
         if (settings.isEnableContextMap()) {
             contextMapWriter.writeContextMap(gen, event);
         }
+    }
+
+    private List<String> getExcludedMdcKeys() {
+        /*
+         * using a List instead of a Map because the assumption is that
+         * the number of excluded keys will be very small and not cause
+         * a performance issue
+         */
+        List<String> result = new ArrayList<>();
+        if (settings.getExcludedMdcKeys() != null) {
+            String[] parts = settings.getExcludedMdcKeys().split(",");
+            for (String part : parts) {
+                result.add(part.trim());
+            }
+        }
+        return result;
     }
 }

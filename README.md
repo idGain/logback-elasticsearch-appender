@@ -3,6 +3,8 @@ Logback Elasticsearch Appender
 
 [![Build Status](https://travis-ci.org/cgoIT/logback-elasticsearch-appender.svg?branch=master)](https://travis-ci.org/cgoIT/logback-elasticsearch-appender) [ ![Download](https://api.bintray.com/packages/cgoit/maven/logback-elasticsearch-appender/images/download.svg) ](https://bintray.com/cgoit/maven/logback-elasticsearch-appender/_latestVersion)
 
+This project is a fork of https://github.com/internetitem/logback-elasticsearch-appender with several commits taken from not yet merged PRs, other forks and more.
+
 Send log events directly from Logback to Elasticsearch. Logs are delivered asynchronously (i.e. not on the main thread) so will not block execution of the program. Note that the queue backlog can be bounded and messages *can* be lost if Elasticsearch is down and either the backlog queue is full or the producer program is trying to exit (it will retry up to a configured number of attempts, but will not block shutdown of the program beyond that). For long-lived programs, this should not be a problem, as messages should be delivered eventually.
 
 This software is dual-licensed under the EPL 1.0 and LGPL 2.1, which is identical to the [Logback License](http://logback.qos.ch/license.html) itself.
@@ -27,6 +29,7 @@ In your `logback.xml`:
             <type>tester</type>
             <loggerName>es-logger</loggerName> <!-- optional -->
             <errorLoggerName>es-error-logger</errorLoggerName> <!-- optional -->
+            <failedEventsLoggerName>es-failed-events</failedEventsLoggerName> <!-- optional -->
             <connectTimeout>30000</connectTimeout> <!-- optional (in ms, default 30000) -->
             <errorsToStderr>false</errorsToStderr> <!-- optional (default false) -->
             <includeCallerData>false</includeCallerData> <!-- optional (default false) -->
@@ -38,6 +41,7 @@ In your `logback.xml`:
             <sleepTime>250</sleepTime> <!-- optional (in ms, default 250) -->
             <rawJsonMessage>false</rawJsonMessage> <!-- optional (default false) -->
             <includeMdc>false</includeMdc> <!-- optional (default false) -->
+            <excludedMdcKeys>stacktrace</excludedMdcKeys> <!-- optional (default empty) -->
             <maxMessageSize>100</maxMessageSize> <!-- optional (default -1 -->
             <authentication class="BasicAuthentication" /> <!-- optional -->
             <enableContextMap>false</enableContextMap><!-- optional (default false) -->
@@ -80,6 +84,10 @@ In your `logback.xml`:
         <logger name="es-error-logger" level="INFO" additivity="false">
             <appender-ref ref="FILELOGGER" />
         </logger>
+        
+        <logger name="es-failed-events" level="INFO" additivity="false">
+            <appender-ref ref="FILELOGGER" />
+        </logger>
 
         <logger name="es-logger" level="INFO" additivity="false">
             <appender name="ES_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -109,8 +117,10 @@ Configuration Reference
  * `maxEvents` (optional, default -1 i.e. not limited): Maximum amount of logging events to be stored for later sending.
  * `loggerName` (optional): If set, raw ES-formatted log data will be sent to this logger
  * `errorLoggerName` (optional): If set, any internal errors or problems will be logged to this logger
+ * `failedEventsLoggerName` (optional): If set, any failed event will be logged to this logger
  * `rawJsonMessage` (optional, default false): If set to `true`, the log message is interpreted as pre-formatted raw JSON message.
  * `includeMdc` (optional, default false): If set to `true`, then all [MDC](http://www.slf4j.org/api/org/slf4j/MDC.html) values will be mapped to properties on the JSON payload.
+ * `excludedMdcKeys` (optional, default empty): comma separated (extra whitespace is fine) list of case sensitive MDC keys that should not be mapped automatically to properties; only useful when includeMdc is set to `true`
  * `maxMessageSize` (optional, default -1): If set to a number greater than 0, truncate messages larger than this length, then append "`..`" to denote that the message was truncated
  * `authentication` (optional): Add the ability to send authentication headers (see below)
  * `enableContextMap` (optional): If the latest parameter in logger call is of type java.util.Map then all content of it will be traversed and written with prefix `context.*`. For event-specific custom fields.
@@ -127,18 +137,35 @@ Groovy Configuration
 
 If you configure logback using `logback.groovy`, this can be configured as follows:
 
-      import ElasticsearchAppender
+      import de.cgoit.logback.elasticsearch.ElasticsearchAppender
+      import de.cgoit.logback.elasticsearch.config.BasicAuthentication
+      import de.cgoit.logback.elasticsearch.config.ElasticsearchProperties
+      import de.cgoit.logback.elasticsearch.config.HttpRequestHeader
+      import de.cgoit.logback.elasticsearch.config.HttpRequestHeaders
+      import de.cgoit.logback.elasticsearch.config.Property
 
-      appender("ELASTIC", ElasticsearchAppender){
-      	url = 'http://yourserver/_bulk'
-      	index = 'logs-%date{yyyy-MM-dd}'
-      	type = 'log'
-      	rawJsonMessage = true
-      	errorsToStderr = true
-      	authentication = new BasicAuthentication()
-      	def configHeaders = new HttpRequestHeaders()
-      	configHeaders.addHeader(new HttpRequestHeader(name: 'Content-Type', value: 'text/plain'))
-      	headers = configHeaders
+      appender("ELASTIC", ElasticsearchAppender) {
+        url = 'http://localhost:9200/_bulk'
+        authentication = new BasicAuthentication("gpro", '${env.ES_PW_GPRO}')
+    
+        index = 'logs-%date{yyyy-MM-dd}'
+        type = 'log'
+    
+        rawJsonMessage = false
+        errorsToStderr = true
+        includeMdc = true
+    
+        def configHeaders = new HttpRequestHeaders()
+        configHeaders.addHeader(new HttpRequestHeader(name: 'Content-Type', value: 'application/x-ndjson'))
+        headers = configHeaders
+    
+        def props = new ElasticsearchProperties()
+        props.addProperty(new Property('host', "${hostname}", false))
+        props.addProperty(new Property('severity', '%level', false))
+        props.addProperty(new Property('thread', '%thread', false))
+        props.addProperty(new Property('stacktrace', '%ex', true))
+        props.addProperty(new Property('logger', '%logger', false))
+        elasticsearchProperties = props
       }
 
       root(INFO, ["ELASTIC"])

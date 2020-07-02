@@ -15,8 +15,7 @@ import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
@@ -28,19 +27,37 @@ import static org.junit.Assert.assertEquals;
 
 public abstract class IntegrationTest {
 
+    protected static final String ELASTICSEARCH_LOGGER_NAME = "ES_LOGGER";
+    protected static final String ELASTICSEARCH_RAW_LOGGER_NAME = "ES_RAW_LOGGER";
     private static final Logger LOG = LoggerFactory.getLogger(IntegrationTest.class);
-
     private static final String INDEX = "log_entries";
     private static final int WAIT_FOR_DOCUMENTS_MAX_RETRIES = 10;
-    private static final int WAIT_FOR_DOCUMENTS_SLEEP_INTERVAL = 1000;
-    protected static final String ELASTICSEARCH_LOGGER_NAME = "ES_LOGGER";
+    private static final int WAIT_FOR_DOCUMENTS_SLEEP_INTERVAL = 2000;
     private static final String ELASTICSEARCH_APPENDER_NAME = "ES_APPENDER";
+    private static final String ELASTICSEARCH_RAW_APPENDER_NAME = "ES_RAW_APPENDER";
 
     protected static RestHighLevelClient client;
     protected static ElasticsearchContainer container;
 
-    @BeforeClass
-    public static void setupElasticSearchContainer() throws IOException {
+    protected static void deleteAll() throws IOException {
+        DeleteByQueryRequest request = new DeleteByQueryRequest("_all");
+        request.setQuery(QueryBuilders.matchAllQuery());
+        BulkByScrollResponse response = client.deleteByQuery(request, RequestOptions.DEFAULT);
+        long deleted = response.getDeleted();
+        LOG.info("Deleted {} documents from elasticsearch.", deleted);
+    }
+
+    private static void configureElasticSearchAppender(String loggerName, String appenderName) throws MalformedURLException {
+        ch.qos.logback.classic.Logger logbackLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(loggerName);
+        ElasticsearchAppender appender = (ElasticsearchAppender) logbackLogger.getAppender(appenderName);
+
+        String containerUrl = HttpHost.create(container.getHttpHostAddress()).toURI() + "/_bulk";
+        LOG.info("Configure appender {} to use {} as container address.", appenderName, containerUrl);
+        appender.setUrl(containerUrl);
+    }
+
+    @Before
+    public void setupElasticSearchContainer() throws IOException {
         // Create the elasticsearch container.
         IntegrationTest.container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.7.1");
 
@@ -49,20 +66,16 @@ public abstract class IntegrationTest {
 
         // Do whatever you want with the rest client ...
         IntegrationTest.client = new RestHighLevelClient(RestClient.builder(HttpHost.create(container.getHttpHostAddress())));
-        configureElasticSearchAppender();
+        configureElasticSearchAppender(ELASTICSEARCH_LOGGER_NAME, ELASTICSEARCH_APPENDER_NAME);
+        configureElasticSearchAppender(ELASTICSEARCH_RAW_LOGGER_NAME, ELASTICSEARCH_RAW_APPENDER_NAME);
 
         deleteAll();
-    }
-
-    @AfterClass
-    public static void tearDownElasticSearchContainer() {
-        // Stop the container.
-        IntegrationTest.container.stop();
     }
 
     @After
-    public void clearFromElasticSearch() throws IOException {
-        deleteAll();
+    public void tearDownElasticSearchContainer() {
+        // Stop the container.
+        IntegrationTest.container.stop();
     }
 
     protected SearchHits searchAll() throws IOException {
@@ -70,14 +83,6 @@ public abstract class IntegrationTest {
         request.searchType(SearchType.DEFAULT).source(SearchSourceBuilder.searchSource().query(QueryBuilders.matchAllQuery()));
         SearchResponse response = client.search(request, RequestOptions.DEFAULT);
         return response.getHits();
-    }
-
-    protected static void deleteAll() throws IOException {
-        DeleteByQueryRequest request = new DeleteByQueryRequest("_all");
-        request.setQuery(QueryBuilders.matchAllQuery());
-        BulkByScrollResponse response = client.deleteByQuery(request, RequestOptions.DEFAULT);
-        long deleted = response.getDeleted();
-        LOG.info("Deleted {} documents from elasticsearch.", deleted);
     }
 
     protected void checkLogEntries(long desiredCount) throws IOException {
@@ -96,14 +101,5 @@ public abstract class IntegrationTest {
 
         LOG.debug("Found {} documents. Desired count is {}.", hits.getTotalHits().value, desiredCount);
         assertEquals(String.format("Document count should be %s", desiredCount), desiredCount, hits.getTotalHits().value);
-    }
-
-    private static void configureElasticSearchAppender() throws MalformedURLException {
-        ch.qos.logback.classic.Logger logbackLogger = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(ELASTICSEARCH_LOGGER_NAME);
-        ElasticsearchAppender appender = (ElasticsearchAppender)logbackLogger.getAppender(ELASTICSEARCH_APPENDER_NAME);
-
-        String containerUrl = HttpHost.create(container.getHttpHostAddress()).toURI() + "/_bulk";
-        LOG.info("Configure appender {} to use {} as container address.", ELASTICSEARCH_APPENDER_NAME, containerUrl);
-        appender.setUrl(containerUrl);
     }
 }

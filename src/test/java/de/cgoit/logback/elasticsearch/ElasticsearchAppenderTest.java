@@ -3,6 +3,7 @@ package de.cgoit.logback.elasticsearch;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Context;
+import de.cgoit.logback.elasticsearch.config.BasicAuthentication;
 import de.cgoit.logback.elasticsearch.config.ElasticsearchProperties;
 import de.cgoit.logback.elasticsearch.config.Settings;
 import de.cgoit.logback.elasticsearch.util.ErrorReporter;
@@ -11,19 +12,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ElasticsearchAppenderTest {
@@ -42,7 +43,7 @@ public class ElasticsearchAppenderTest {
 
     private boolean publisherSet = false;
     private boolean errorReporterSet = false;
-    private AbstractElasticsearchAppender appender;
+    private AbstractElasticsearchAppender<ILoggingEvent> appender;
 
     @Before
     public void setUp() {
@@ -103,7 +104,7 @@ public class ElasticsearchAppenderTest {
 
         appender.append(eventToLog);
 
-        verifyZeroInteractions(elasticsearchPublisher);
+        verifyNoInteractions(elasticsearchPublisher);
     }
 
 
@@ -120,7 +121,7 @@ public class ElasticsearchAppenderTest {
 
         appender.append(eventToLog);
 
-        verifyZeroInteractions(elasticsearchPublisher);
+        verifyNoInteractions(elasticsearchPublisher);
     }
 
 
@@ -178,18 +179,22 @@ public class ElasticsearchAppenderTest {
         boolean errorsToStderr = false;
         boolean rawJsonMessage = false;
         boolean includeMdc = true;
+        String excludedMdcKeys = "stacktrace,url";
         String index = "app-logs";
         String type = "appenderType";
         int maxQueueSize = 10;
         String logger = "es-logger";
         String url = "http://myelasticsearch.mycompany.com";
         String errorLogger = "es-error-logger";
+        String failedEventsLogger = "es-failed-events";
         int maxRetries = 10000;
         int aSleepTime = 10000;
         int readTimeout = 10000;
         int connectTimeout = 5000;
         boolean enableContextMap = true;
         int maxEvents = 1000;
+        BasicAuthentication ba = new BasicAuthentication();
+        int maxMessageSize = -1;
 
         appender.setIncludeCallerData(includeCallerData);
         appender.setSleepTime(aSleepTime);
@@ -202,12 +207,16 @@ public class ElasticsearchAppenderTest {
         appender.setUrl(url);
         appender.setLoggerName(logger);
         appender.setErrorLoggerName(errorLogger);
+        appender.setFailedEventsLoggerName(failedEventsLogger);
         appender.setMaxRetries(maxRetries);
         appender.setConnectTimeout(connectTimeout);
         appender.setRawJsonMessage(rawJsonMessage);
         appender.setIncludeMdc(includeMdc);
+        appender.setExcludedMdcKeys(excludedMdcKeys);
         appender.setEnableContextMap(enableContextMap);
         appender.setMaxEvents(maxEvents);
+        appender.setAuthentication(ba);
+        appender.setMaxMessageSize(maxMessageSize);
 
         verify(settings, times(1)).setReadTimeout(readTimeout);
         verify(settings, times(1)).setSleepTime(aSleepTime);
@@ -220,12 +229,16 @@ public class ElasticsearchAppenderTest {
         verify(settings, times(1)).setUrl(new URL(url));
         verify(settings, times(1)).setLoggerName(logger);
         verify(settings, times(1)).setErrorLoggerName(errorLogger);
+        verify(settings, times(1)).setFailedEventsLoggerName(failedEventsLogger);
         verify(settings, times(1)).setMaxRetries(maxRetries);
         verify(settings, times(1)).setConnectTimeout(connectTimeout);
         verify(settings, times(1)).setRawJsonMessage(rawJsonMessage);
         verify(settings, times(1)).setIncludeMdc(includeMdc);
+        verify(settings, times(1)).setExcludedMdcKeys(excludedMdcKeys);
         verify(settings, times(1)).setEnableContextMap(enableContextMap);
         verify(settings, times(1)).setMaxEvents(maxEvents);
+        verify(settings, times(1)).setAuthentication(ba);
+        verify(settings, times(1)).setMaxMessageSize(maxMessageSize);
     }
 
 

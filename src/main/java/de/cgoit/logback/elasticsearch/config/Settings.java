@@ -10,6 +10,7 @@ public class Settings {
 
     private String loggerName;
     private String errorLoggerName;
+    private String failedEventsLoggerName;
 
     private int sleepTime = 250;
     private int maxRetries = 3;
@@ -19,6 +20,7 @@ public class Settings {
     private boolean errorsToStderr;
     private boolean includeCallerData;
     private boolean includeMdc;
+    private String excludedMdcKeys;
     private boolean rawJsonMessage;
     private int maxQueueSize = 100 * 1024 * 1024;
     private Authentication authentication;
@@ -133,6 +135,14 @@ public class Settings {
         this.errorLoggerName = errorLoggerName;
     }
 
+    public String getFailedEventsLoggerName() {
+        return failedEventsLoggerName;
+    }
+
+    public void setFailedEventsLoggerName(String failedEventsLoggerName) {
+        this.failedEventsLoggerName = failedEventsLoggerName;
+    }
+
     public boolean isRawJsonMessage() {
         return rawJsonMessage;
     }
@@ -155,6 +165,14 @@ public class Settings {
 
     public void setIncludeMdc(boolean includeMdc) {
         this.includeMdc = includeMdc;
+    }
+
+    public String getExcludedMdcKeys() {
+        return excludedMdcKeys;
+    }
+
+    public void setExcludedMdcKeys(String excludedMdcKeys) {
+        this.excludedMdcKeys = excludedMdcKeys;
     }
 
     public int getMaxMessageSize() {
