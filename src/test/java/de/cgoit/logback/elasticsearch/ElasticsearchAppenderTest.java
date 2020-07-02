@@ -185,6 +185,7 @@ public class ElasticsearchAppenderTest {
         String logger = "es-logger";
         String url = "http://myelasticsearch.mycompany.com";
         String errorLogger = "es-error-logger";
+        String failedEventsLogger = "es-failed-events";
         int maxRetries = 10000;
         int aSleepTime = 10000;
         int readTimeout = 10000;
@@ -203,6 +204,7 @@ public class ElasticsearchAppenderTest {
         appender.setUrl(url);
         appender.setLoggerName(logger);
         appender.setErrorLoggerName(errorLogger);
+        appender.setFailedEventsLoggerName(failedEventsLogger);
         appender.setMaxRetries(maxRetries);
         appender.setConnectTimeout(connectTimeout);
         appender.setRawJsonMessage(rawJsonMessage);
@@ -222,6 +224,7 @@ public class ElasticsearchAppenderTest {
         verify(settings, times(1)).setUrl(new URL(url));
         verify(settings, times(1)).setLoggerName(logger);
         verify(settings, times(1)).setErrorLoggerName(errorLogger);
+        verify(settings, times(1)).setFailedEventsLoggerName(failedEventsLogger);
         verify(settings, times(1)).setMaxRetries(maxRetries);
         verify(settings, times(1)).setConnectTimeout(connectTimeout);
         verify(settings, times(1)).setRawJsonMessage(rawJsonMessage);

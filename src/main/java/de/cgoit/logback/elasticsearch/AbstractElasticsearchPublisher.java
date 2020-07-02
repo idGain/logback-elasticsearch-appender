@@ -12,6 +12,9 @@ import de.cgoit.logback.elasticsearch.util.ErrorReporter;
 import de.cgoit.logback.elasticsearch.writer.ElasticsearchWriter;
 import de.cgoit.logback.elasticsearch.writer.LoggerWriter;
 import de.cgoit.logback.elasticsearch.writer.StdErrWriter;
+import de.cgoit.logback.elasticsearch.writer.FailedEventsWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -20,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
@@ -38,6 +42,8 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
     private final AbstractPropertyAndEncoder<T> indexPattern;
     private final JsonFactory jf;
     private final JsonGenerator jsonGenerator;
+    private final JsonGenerator failedEventsJsonGenerator;
+    private final FailedEventsWriter failedEventsWriter;
     private final ErrorReporter errorReporter;
     private volatile boolean working;
 
@@ -52,6 +58,14 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
         this.jf = new JsonFactory();
         this.jf.setRootValueSeparator(null);
         this.jsonGenerator = jf.createGenerator(outputAggregator);
+        if (settings.getFailedEventsLoggerName() != null) {
+            this.failedEventsWriter = new FailedEventsWriter(settings.getFailedEventsLoggerName());
+            this.failedEventsJsonGenerator = jf.createGenerator(failedEventsWriter);
+        } else {
+            this.failedEventsWriter = null;
+            this.failedEventsJsonGenerator = null;
+        }
+
 
         this.indexPattern = buildPropertyAndEncoder(context, new Property("<index>", settings.getIndex(), false));
         this.propertyList = generatePropertyList(context, properties);
@@ -150,7 +164,22 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
                     serializeEvents(jsonGenerator, eventsCopy, propertyList);
                 }
 
-                if (!outputAggregator.sendData()) {
+                try {
+                    Set<Integer> failedIndices = outputAggregator.sendData();
+                    if (!failedIndices.isEmpty() && eventsCopy != null && failedEventsJsonGenerator != null) {
+                        for (Integer idx: failedIndices) {
+                            if (idx < eventsCopy.size() - 1) {
+                                T event = eventsCopy.get(idx);
+                                serializeIndexString(failedEventsJsonGenerator, event);
+                                failedEventsJsonGenerator.writeRaw('\n');
+                                serializeEvent(failedEventsJsonGenerator, event, propertyList);
+                                failedEventsJsonGenerator.writeRaw('\n');
+                                failedEventsJsonGenerator.flush();
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    // Fatal error in sendData
                     currentTry++;
                 }
             } catch (Exception e) {

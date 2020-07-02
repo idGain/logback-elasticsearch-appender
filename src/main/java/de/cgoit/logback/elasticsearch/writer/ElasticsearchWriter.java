@@ -1,8 +1,11 @@
 package de.cgoit.logback.elasticsearch.writer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import de.cgoit.logback.elasticsearch.config.HttpRequestHeader;
 import de.cgoit.logback.elasticsearch.config.HttpRequestHeaders;
 import de.cgoit.logback.elasticsearch.config.Settings;
+import de.cgoit.logback.elasticsearch.dto.Response;
 import de.cgoit.logback.elasticsearch.util.ErrorReporter;
 
 import java.io.IOException;
@@ -14,6 +17,8 @@ import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 public class ElasticsearchWriter implements SafeWriter {
 
@@ -24,6 +29,13 @@ public class ElasticsearchWriter implements SafeWriter {
     private final Collection<HttpRequestHeader> headerList;
 
     private boolean bufferExceeded;
+
+    private static final ObjectReader objectReader;
+
+    static {
+        ObjectMapper mapper = new ObjectMapper();
+        objectReader = mapper.readerFor(Map.class);
+    }
 
     public ElasticsearchWriter(ErrorReporter errorReporter, Settings settings, HttpRequestHeaders headers) {
         this.errorReporter = errorReporter;
@@ -69,9 +81,9 @@ public class ElasticsearchWriter implements SafeWriter {
         }
     }
 
-    public void sendData() throws IOException {
+    public Set<Integer> sendData() throws IOException {
         if (sendBuffer.length() <= 0) {
-            return;
+            return null;
         }
 
         HttpURLConnection urlConnection = (HttpURLConnection) (settings.getUrl().openConnection());
@@ -100,7 +112,13 @@ public class ElasticsearchWriter implements SafeWriter {
             }
 
             int rc = urlConnection.getResponseCode();
-            if (rc != 200) {
+            if (rc == 200) {
+                // Marshal response
+                Response response = new Response(objectReader.readValue(urlConnection.getInputStream()));
+                if (response.hasErrors()) {
+                    return response.getFailedItems().keySet();
+                }
+            } else {
                 String data = slurpErrors(urlConnection);
                 throw new IOException("Got response code [" + rc + "] from server with data " + data);
             }
@@ -113,6 +131,8 @@ public class ElasticsearchWriter implements SafeWriter {
             errorReporter.logInfo("Send queue cleared - log messages will no longer be lost");
             bufferExceeded = false;
         }
+
+        return null;
     }
 
     public boolean hasPendingData() {

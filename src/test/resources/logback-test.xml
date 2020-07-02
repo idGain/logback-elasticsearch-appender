@@ -49,6 +49,7 @@
         <type>tester</type>
         <loggerName>es-logger</loggerName> <!-- optional -->
         <errorLoggerName>es-error-logger</errorLoggerName> <!-- optional -->
+        <failedEventsLoggerName>es-failed-events</failedEventsLoggerName> <!-- optional -->
         <includeMdc>true</includeMdc> <!-- optional (default false) -->
         <rawJsonMessage>true</rawJsonMessage>
         <properties>
@@ -86,9 +87,25 @@
         <appender-ref ref="ES_APPENDER" />
     </logger>
 
+    <logger name="ES_RAW_LOGGER" level="debug" additivity="false">
+        <appender-ref ref="ES_RAW_APPENDER" />
+    </logger>
+
     <logger name="es-logger" level="INFO" additivity="false">
         <appender name="ES_FILE" class="ch.qos.logback.core.FileAppender">
             <file>target/logs/es-messages.log</file>
+            <append>false</append>
+            <!-- set immediateFlush to false for much higher logging throughput -->
+            <immediateFlush>true</immediateFlush>
+            <encoder>
+                <pattern>%msg</pattern> <!-- This pattern is important, otherwise it won't be the raw Elasticsearch format anyomre -->
+            </encoder>
+        </appender>
+    </logger>
+
+    <logger name="es-failed-events" level="INFO" additivity="false">
+        <appender name="ES_FILE" class="ch.qos.logback.core.FileAppender">
+            <file>target/logs/es-failed-events.log</file>
             <append>false</append>
             <!-- set immediateFlush to false for much higher logging throughput -->
             <immediateFlush>true</immediateFlush>

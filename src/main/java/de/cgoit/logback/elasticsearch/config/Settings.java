@@ -10,6 +10,7 @@ public class Settings {
 
     private String loggerName;
     private String errorLoggerName;
+    private String failedEventsLoggerName;
 
     private int sleepTime = 250;
     private int maxRetries = 3;
@@ -132,6 +133,14 @@ public class Settings {
 
     public void setErrorLoggerName(String errorLoggerName) {
         this.errorLoggerName = errorLoggerName;
+    }
+
+    public String getFailedEventsLoggerName() {
+        return failedEventsLoggerName;
+    }
+
+    public void setFailedEventsLoggerName(String failedEventsLoggerName) {
+        this.failedEventsLoggerName = failedEventsLoggerName;
     }
 
     public boolean isRawJsonMessage() {

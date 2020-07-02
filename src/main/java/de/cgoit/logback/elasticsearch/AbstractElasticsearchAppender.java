@@ -118,6 +118,10 @@ public abstract class AbstractElasticsearchAppender<T> extends UnsynchronizedApp
         settings.setErrorLoggerName(logger);
     }
 
+    public void setFailedEventsLoggerName(String logger) {
+        settings.setFailedEventsLoggerName(logger);
+    }
+
     public void setHeaders(HttpRequestHeaders httpRequestHeaders) {
         this.headers = httpRequestHeaders;
     }

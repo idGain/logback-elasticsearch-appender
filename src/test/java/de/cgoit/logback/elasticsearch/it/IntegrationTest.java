@@ -34,7 +34,9 @@ public abstract class IntegrationTest {
     private static final int WAIT_FOR_DOCUMENTS_MAX_RETRIES = 10;
     private static final int WAIT_FOR_DOCUMENTS_SLEEP_INTERVAL = 1000;
     protected static final String ELASTICSEARCH_LOGGER_NAME = "ES_LOGGER";
+    protected static final String ELASTICSEARCH_RAW_LOGGER_NAME = "ES_RAW_LOGGER";
     private static final String ELASTICSEARCH_APPENDER_NAME = "ES_APPENDER";
+    private static final String ELASTICSEARCH_RAW_APPENDER_NAME = "ES_RAW_APPENDER";
 
     protected static RestHighLevelClient client;
     protected static ElasticsearchContainer container;
@@ -49,7 +51,8 @@ public abstract class IntegrationTest {
 
         // Do whatever you want with the rest client ...
         IntegrationTest.client = new RestHighLevelClient(RestClient.builder(HttpHost.create(container.getHttpHostAddress())));
-        configureElasticSearchAppender();
+        configureElasticSearchAppender(ELASTICSEARCH_LOGGER_NAME, ELASTICSEARCH_APPENDER_NAME);
+        configureElasticSearchAppender(ELASTICSEARCH_RAW_LOGGER_NAME, ELASTICSEARCH_RAW_APPENDER_NAME);
 
         deleteAll();
     }
@@ -98,12 +101,12 @@ public abstract class IntegrationTest {
         assertEquals(String.format("Document count should be %s", desiredCount), desiredCount, hits.getTotalHits().value);
     }
 
-    private static void configureElasticSearchAppender() throws MalformedURLException {
-        ch.qos.logback.classic.Logger logbackLogger = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(ELASTICSEARCH_LOGGER_NAME);
-        ElasticsearchAppender appender = (ElasticsearchAppender)logbackLogger.getAppender(ELASTICSEARCH_APPENDER_NAME);
+    private static void configureElasticSearchAppender(String loggerName, String appenderName) throws MalformedURLException {
+        ch.qos.logback.classic.Logger logbackLogger = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(loggerName);
+        ElasticsearchAppender appender = (ElasticsearchAppender)logbackLogger.getAppender(appenderName);
 
         String containerUrl = HttpHost.create(container.getHttpHostAddress()).toURI() + "/_bulk";
-        LOG.info("Configure appender {} to use {} as container address.", ELASTICSEARCH_APPENDER_NAME, containerUrl);
+        LOG.info("Configure appender {} to use {} as container address.", appenderName, containerUrl);
         appender.setUrl(containerUrl);
     }
 }
