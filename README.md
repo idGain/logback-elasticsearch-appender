@@ -131,18 +131,35 @@ Groovy Configuration
 
 If you configure logback using `logback.groovy`, this can be configured as follows:
 
-      import ElasticsearchAppender
+      import de.cgoit.logback.elasticsearch.ElasticsearchAppender
+      import de.cgoit.logback.elasticsearch.config.BasicAuthentication
+      import de.cgoit.logback.elasticsearch.config.ElasticsearchProperties
+      import de.cgoit.logback.elasticsearch.config.HttpRequestHeader
+      import de.cgoit.logback.elasticsearch.config.HttpRequestHeaders
+      import de.cgoit.logback.elasticsearch.config.Property
 
-      appender("ELASTIC", ElasticsearchAppender){
-      	url = 'http://yourserver/_bulk'
-      	index = 'logs-%date{yyyy-MM-dd}'
-      	type = 'log'
-      	rawJsonMessage = true
-      	errorsToStderr = true
-      	authentication = new BasicAuthentication()
-      	def configHeaders = new HttpRequestHeaders()
-      	configHeaders.addHeader(new HttpRequestHeader(name: 'Content-Type', value: 'application/x-ndjson'))
-      	headers = configHeaders
+      appender("ELASTIC", ElasticsearchAppender) {
+        url = 'http://localhost:9200/_bulk'
+        authentication = new BasicAuthentication("gpro", '${env.ES_PW_GPRO}')
+    
+        index = 'logs-%date{yyyy-MM-dd}'
+        type = 'log'
+    
+        rawJsonMessage = false
+        errorsToStderr = true
+        includeMdc = true
+    
+        def configHeaders = new HttpRequestHeaders()
+        configHeaders.addHeader(new HttpRequestHeader(name: 'Content-Type', value: 'application/x-ndjson'))
+        headers = configHeaders
+    
+        def props = new ElasticsearchProperties()
+        props.addProperty(new Property('host', "${hostname}", false))
+        props.addProperty(new Property('severity', '%level', false))
+        props.addProperty(new Property('thread', '%thread', false))
+        props.addProperty(new Property('stacktrace', '%ex', true))
+        props.addProperty(new Property('logger', '%logger', false))
+        elasticsearchProperties = props
       }
 
       root(INFO, ["ELASTIC"])

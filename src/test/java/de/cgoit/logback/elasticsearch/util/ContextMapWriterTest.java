@@ -13,7 +13,7 @@ import java.io.IOException;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContextMapWriterTest {
@@ -44,7 +44,7 @@ public class ContextMapWriterTest {
         contextMapWriter.writeContextMap(jsonGenerator, event);
         event.setArgumentArray(new Object[]{});
         contextMapWriter.writeContextMap(jsonGenerator, event);
-        verifyZeroInteractions(jsonGenerator);
+        verifyNoInteractions(jsonGenerator);
     }
 
     @Test
@@ -52,6 +52,6 @@ public class ContextMapWriterTest {
         LoggingEvent event = new LoggingEvent();
         event.setArgumentArray(new Object[]{"23", 3243});
         contextMapWriter.writeContextMap(jsonGenerator, event);
-        verifyZeroInteractions(jsonGenerator);
+        verifyNoInteractions(jsonGenerator);
     }
 }

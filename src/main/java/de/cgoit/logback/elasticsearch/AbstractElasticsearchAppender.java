@@ -59,6 +59,10 @@ public abstract class AbstractElasticsearchAppender<T> extends UnsynchronizedApp
     protected abstract void appendInternal(T eventObject);
 
     public void setProperties(ElasticsearchProperties elasticsearchProperties) {
+        setElasticsearchProperties(elasticsearchProperties);
+    }
+
+    public void setElasticsearchProperties(ElasticsearchProperties elasticsearchProperties) {
         this.elasticsearchProperties = elasticsearchProperties;
     }
 

@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -23,7 +23,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ElasticsearchAppenderTest {
@@ -42,7 +42,7 @@ public class ElasticsearchAppenderTest {
 
     private boolean publisherSet = false;
     private boolean errorReporterSet = false;
-    private AbstractElasticsearchAppender appender;
+    private AbstractElasticsearchAppender<ILoggingEvent> appender;
 
     @Before
     public void setUp() {
@@ -103,7 +103,7 @@ public class ElasticsearchAppenderTest {
 
         appender.append(eventToLog);
 
-        verifyZeroInteractions(elasticsearchPublisher);
+        verifyNoInteractions(elasticsearchPublisher);
     }
 
 
@@ -120,7 +120,7 @@ public class ElasticsearchAppenderTest {
 
         appender.append(eventToLog);
 
-        verifyZeroInteractions(elasticsearchPublisher);
+        verifyNoInteractions(elasticsearchPublisher);
     }
 
 
