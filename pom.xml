@@ -409,27 +409,6 @@
                   <dataFile>${project.build.directory}/coverage.exec</dataFile>
                 </configuration>
               </execution>
-              <execution>
-                <id>default-check</id>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-                <configuration>
-                  <rules>
-                    <rule>
-                      <element>BUNDLE</element>
-                      <limits>
-                        <limit>
-                          <counter>COMPLEXITY</counter>
-                          <value>COVEREDRATIO</value>
-                          <minimum>0.40</minimum>
-                        </limit>
-                      </limits>
-                    </rule>
-                  </rules>
-                  <dataFile>${project.build.directory}/coverage.exec</dataFile>
-                </configuration>
-              </execution>
             </executions>
           </plugin>
         </plugins>
