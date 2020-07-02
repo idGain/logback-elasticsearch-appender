@@ -29,6 +29,7 @@ In your `logback.xml`:
             <type>tester</type>
             <loggerName>es-logger</loggerName> <!-- optional -->
             <errorLoggerName>es-error-logger</errorLoggerName> <!-- optional -->
+            <failedEventsLoggerName>es-failed-events</failedEventsLoggerName> <!-- optional -->
             <connectTimeout>30000</connectTimeout> <!-- optional (in ms, default 30000) -->
             <errorsToStderr>false</errorsToStderr> <!-- optional (default false) -->
             <includeCallerData>false</includeCallerData> <!-- optional (default false) -->
@@ -83,6 +84,10 @@ In your `logback.xml`:
         <logger name="es-error-logger" level="INFO" additivity="false">
             <appender-ref ref="FILELOGGER" />
         </logger>
+        
+        <logger name="es-failed-events" level="INFO" additivity="false">
+            <appender-ref ref="FILELOGGER" />
+        </logger>
 
         <logger name="es-logger" level="INFO" additivity="false">
             <appender name="ES_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -112,6 +117,7 @@ Configuration Reference
  * `maxEvents` (optional, default -1 i.e. not limited): Maximum amount of logging events to be stored for later sending.
  * `loggerName` (optional): If set, raw ES-formatted log data will be sent to this logger
  * `errorLoggerName` (optional): If set, any internal errors or problems will be logged to this logger
+ * `failedEventsLoggerName` (optional): If set, any failed event will be logged to this logger
  * `rawJsonMessage` (optional, default false): If set to `true`, the log message is interpreted as pre-formatted raw JSON message.
  * `includeMdc` (optional, default false): If set to `true`, then all [MDC](http://www.slf4j.org/api/org/slf4j/MDC.html) values will be mapped to properties on the JSON payload.
  * `excludedMdcKeys` (optional, default empty): comma separated (extra whitespace is fine) list of case sensitive MDC keys that should not be mapped automatically to properties; only useful when includeMdc is set to `true`
