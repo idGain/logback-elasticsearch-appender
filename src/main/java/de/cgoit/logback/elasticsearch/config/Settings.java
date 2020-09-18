@@ -13,9 +13,10 @@ public class Settings {
     private String failedEventsLoggerName;
 
     private int sleepTime = 250;
+    private int sleepTimeAfterError = 15_000;
     private int maxRetries = 3;
-    private int connectTimeout = 30000;
-    private int readTimeout = 30000;
+    private int connectTimeout = 30_000;
+    private int readTimeout = 30_000;
     private boolean logsToStderr;
     private boolean errorsToStderr;
     private boolean includeCallerData;
@@ -53,6 +54,17 @@ public class Settings {
             sleepTime = 100;
         }
         this.sleepTime = sleepTime;
+    }
+
+    public int getSleepTimeAfterError() {
+        return sleepTimeAfterError;
+    }
+
+    public void setSleepTimeAfterError(int sleepTimeAfterError) {
+        if (sleepTimeAfterError < 10_000) {
+            sleepTimeAfterError = 10_000;
+        }
+        this.sleepTimeAfterError = sleepTimeAfterError;
     }
 
     public int getMaxRetries() {

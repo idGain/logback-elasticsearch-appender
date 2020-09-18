@@ -59,7 +59,7 @@ public abstract class IntegrationTest {
     @Before
     public void setupElasticSearchContainer() throws IOException {
         // Create the elasticsearch container.
-        IntegrationTest.container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.7.1");
+        IntegrationTest.container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.1");
 
         // Start the container. This step might take some time...
         container.start();

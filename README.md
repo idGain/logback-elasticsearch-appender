@@ -39,6 +39,7 @@ In your `logback.xml`:
             <maxEvents>100</maxEvents><!-- optional (default -1) -->
             <readTimeout>30000</readTimeout> <!-- optional (in ms, default 30000) -->
             <sleepTime>250</sleepTime> <!-- optional (in ms, default 250) -->
+            <sleepTimeAfterError>15000</sleepTimeAfterError> <!-- optional (in ms, default 15000) -->
             <rawJsonMessage>false</rawJsonMessage> <!-- optional (default false) -->
             <includeMdc>false</includeMdc> <!-- optional (default false) -->
             <excludedMdcKeys>stacktrace</excludedMdcKeys> <!-- optional (default empty) -->
@@ -107,6 +108,7 @@ Configuration Reference
  * `index` (required): Name if the index to publish to (populated using PatternLayout just like individual properties - see below)
  * `type` (optional): Elasticsearch `_type` field for records. Although this library does not require `type` to be populated, Elasticsearch may, unless the configured URL includes the type (i.e. `{index}/{type}/_bulk` as opposed to `/_bulk` and `/{index}/_bulk`). See the Elasticsearch [Bulk API](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html) documentation for more information
  * `sleepTime` (optional, default 250): Time (in ms) to sleep between attempts at delivering a message
+ * `sleepTimeAfterError` (optional, default 15000): Time (in ms) to sleep between failed attempts at delivering a message
  * `maxRetries` (optional, default 3): Number of times to attempt retrying a message on failure. Note that subsequent log messages reset the retry count to 0. This value is important if your program is about to exit (i.e. it is not producing any more log lines) but is unable to deliver some messages to ES
  * `connectTimeout` (optional, default 30000): Elasticsearch connect timeout (in ms)
  * `readTimeout` (optional, default 30000): Elasticsearch read timeout (in ms)

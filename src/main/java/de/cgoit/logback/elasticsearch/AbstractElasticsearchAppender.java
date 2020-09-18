@@ -70,6 +70,10 @@ public abstract class AbstractElasticsearchAppender<T> extends UnsynchronizedApp
         settings.setSleepTime(sleepTime);
     }
 
+    public void setSleepTimeAfterError(int sleepTimeAfterError) {
+        settings.setSleepTimeAfterError(sleepTimeAfterError);
+    }
+
     public void setMaxRetries(int maxRetries) {
         settings.setMaxRetries(maxRetries);
     }

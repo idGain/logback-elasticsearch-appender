@@ -179,10 +179,16 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
                 } catch (IOException e) {
                     // Fatal error in sendData
                     currentTry++;
+                    Thread.sleep(settings.getSleepTimeAfterError());
                 }
             } catch (Exception e) {
                 errorReporter.logError("Internal error handling log data: " + e.getMessage(), e);
                 currentTry++;
+                try {
+                    Thread.sleep(settings.getSleepTimeAfterError());
+                } catch (InterruptedException interruptedException) {
+                    // nothing to do
+                }
             }
         }
     }

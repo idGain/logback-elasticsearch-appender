@@ -189,6 +189,7 @@ public class ElasticsearchAppenderTest {
         String failedEventsLogger = "es-failed-events";
         int maxRetries = 10000;
         int aSleepTime = 10000;
+        int aSleepTimeAfterError = 10000;
         int readTimeout = 10000;
         int connectTimeout = 5000;
         boolean enableContextMap = true;
@@ -198,6 +199,7 @@ public class ElasticsearchAppenderTest {
 
         appender.setIncludeCallerData(includeCallerData);
         appender.setSleepTime(aSleepTime);
+        appender.setSleepTimeAfterError(aSleepTimeAfterError);
         appender.setReadTimeout(readTimeout);
         appender.setErrorsToStderr(errorsToStderr);
         appender.setLogsToStderr(errorsToStderr);
@@ -220,6 +222,7 @@ public class ElasticsearchAppenderTest {
 
         verify(settings, times(1)).setReadTimeout(readTimeout);
         verify(settings, times(1)).setSleepTime(aSleepTime);
+        verify(settings, times(1)).setSleepTimeAfterError(aSleepTimeAfterError);
         verify(settings, times(1)).setIncludeCallerData(includeCallerData);
         verify(settings, times(1)).setErrorsToStderr(errorsToStderr);
         verify(settings, times(1)).setLogsToStderr(errorsToStderr);
