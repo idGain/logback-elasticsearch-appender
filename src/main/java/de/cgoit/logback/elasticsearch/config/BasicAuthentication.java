@@ -1,8 +1,7 @@
 package de.cgoit.logback.elasticsearch.config;
 
-import org.apache.commons.codec.binary.Base64;
-
 import java.net.HttpURLConnection;
+import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,12 +32,12 @@ public class BasicAuthentication implements Authentication {
         if (authFromUrl) {
             String userInfo = urlConnection.getURL().getUserInfo();
             if (userInfo != null) {
-                String basicAuth = "Basic " + new String(Base64.encodeBase64(userInfo.getBytes()));
+                String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userInfo.getBytes()));
                 urlConnection.setRequestProperty("Authorization", basicAuth);
             }
         } else {
             if (username != null && password != null) {
-                String basicAuth = "Basic " + new String(Base64.encodeBase64(String.format("%s:%s", username, password).getBytes()));
+                String basicAuth = "Basic " + new String(Base64.getEncoder().encode(String.format("%s:%s", username, password).getBytes()));
                 urlConnection.setRequestProperty("Authorization", basicAuth);
             }
         }
