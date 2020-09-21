@@ -9,6 +9,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
+import java.util.Base64;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -37,7 +39,8 @@ public class BasicAuthenticationTest {
 
         verifyStatic(BasicAuthentication.class, times(1));
         BasicAuthentication.getFromEnv(ENV_VAR_SET_NAME);
-        assertEquals(ENV_VAR_SET_VALUE, Whitebox.getInternalState(auth, "password"));
+        assertEquals("Basic " + new String(Base64.getEncoder().encode(String.format("%s:%s", "TheUsername", ENV_VAR_SET_VALUE).getBytes())),
+                Whitebox.getInternalState(auth, "authentication"));
     }
 
     @Test
@@ -46,7 +49,8 @@ public class BasicAuthenticationTest {
 
         verifyStatic(BasicAuthentication.class, times(1));
         BasicAuthentication.getFromEnv(ENV_VAR_NOT_SET_NAME);
-        assertEquals(ENV_VAR_NOT_SET_KEY, Whitebox.getInternalState(auth, "password"));
+        assertEquals("Basic " + new String(Base64.getEncoder().encode(String.format("%s:%s", "TheUsername", ENV_VAR_NOT_SET_KEY).getBytes())),
+                Whitebox.getInternalState(auth, "authentication"));
     }
 
     @Test
@@ -55,6 +59,7 @@ public class BasicAuthenticationTest {
 
         verifyStatic(BasicAuthentication.class, times(0));
         BasicAuthentication.getFromEnv(any());
-        assertEquals("ThePassword", Whitebox.getInternalState(auth, "password"));
+        assertEquals("Basic " + new String(Base64.getEncoder().encode(String.format("%s:%s", "TheUsername", "ThePassword").getBytes())),
+                Whitebox.getInternalState(auth, "authentication"));
     }
 }

@@ -10,8 +10,7 @@ public class BasicAuthentication implements Authentication {
     private static final Pattern ENV_VARIABLE_PATTERN = Pattern.compile("^\\$\\{env\\.(.+)\\}$");
 
     private boolean authFromUrl = true;
-    private String username = null;
-    private String password = null;
+    private String authentication = null;
 
     public BasicAuthentication() {
 
@@ -19,8 +18,12 @@ public class BasicAuthentication implements Authentication {
 
     public BasicAuthentication(String username, String password) {
         this.authFromUrl = false;
-        this.username = resolveEnvVariable(username);
-        this.password = resolveEnvVariable(password);
+        String resolvedUsername = resolveEnvVariable(username);
+        String resolvedPassword = resolveEnvVariable(password);
+
+        if (resolvedUsername != null && resolvedPassword != null) {
+            this.authentication = "Basic " + new String(Base64.getEncoder().encode(String.format("%s:%s", resolvedUsername, resolvedPassword).getBytes()));
+        }
     }
 
     static String getFromEnv(String envVariableName) {
@@ -36,9 +39,8 @@ public class BasicAuthentication implements Authentication {
                 urlConnection.setRequestProperty("Authorization", basicAuth);
             }
         } else {
-            if (username != null && password != null) {
-                String basicAuth = "Basic " + new String(Base64.getEncoder().encode(String.format("%s:%s", username, password).getBytes()));
-                urlConnection.setRequestProperty("Authorization", basicAuth);
+            if (authentication != null) {
+                urlConnection.setRequestProperty("Authorization", authentication);
             }
         }
     }
