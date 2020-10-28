@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>de.cgoit</groupId>
+  <groupId>at.porscheinformatik.com</groupId>
   <artifactId>logback-elasticsearch-appender</artifactId>
-  <version>1.13-SNAPSHOT</version>
+  <version>1.17-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Logback Elasticsearch Appender</name>
   <description>Send log events directly from Logback to Elasticsearch</description>
-  <url>https://github.com/cgoIT/logback-elasticsearch-appender</url>
+  <url>https://github.com/TheDevOps/logback-elasticsearch-appender</url>
   <organization>
-    <name>cgo IT</name>
-    <url>https://cgo-it.de/</url>
+    <name>Porsche Informatik</name>
+    <url>https://www.porscheinformatik.com/</url>
   </organization>
   <licenses>
     <license>
@@ -21,27 +21,16 @@
   </licenses>
   <developers>
     <developer>
-      <name>Adam Batkin</name>
-      <email>adam@batkin.net</email>
-    </developer>
-    <developer>
-      <name>Carsten Götzinger</name>
-      <email>carsten@cgo-it.de</email>
+      <name>Daniel Hofer</name>
+      <email>daniel.hofer@porscheinformatik.com</email>
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:https://github.com/cgoIT/logback-elasticsearch-appender.git</connection>
-    <developerConnection>scm:git:https://github.com/cgoIT/logback-elasticsearch-appender.git</developerConnection>
+    <connection>scm:git:https://github.com/TheDevOps/logback-elasticsearch-appender.git</connection>
+    <developerConnection>scm:git:https://github.com/TheDevOps/logback-elasticsearch-appender.git</developerConnection>
     <tag>HEAD</tag>
     <url>https://github.com/cgoIT/logback-elasticsearch-appender</url>
   </scm>
-  <distributionManagement>
-    <repository>
-      <id>bintray-cgoit-maven</id>
-      <name>cgoit-maven</name>
-      <url>https://api.bintray.com/maven/cgoit/maven/logback-elasticsearch-appender/;publish=1</url>
-    </repository>
-  </distributionManagement>
   <properties>
     <jackson.version>2.11.1</jackson.version>
     <jacoco.version>0.8.5</jacoco.version>

@@ -44,8 +44,8 @@ public class ClassicElasticsearchPublisher extends AbstractElasticsearchPublishe
             gen.writeRawValue(event.getFormattedMessage());
         } else {
             String formattedMessage = event.getFormattedMessage();
-            if (settings.getMaxMessageSize() > 0 && formattedMessage.length() > settings.getMaxMessageSize()) {
-                formattedMessage = formattedMessage.substring(0, settings.getMaxMessageSize()) + "..";
+            if (formattedMessage != null && settings.getMaxMessageSize() > 0 && formattedMessage.length() > settings.getMaxMessageSize()) {
+                formattedMessage = formattedMessage.substring(0, settings.getMaxMessageSize()) + "... (abrv.)";
             }
             gen.writeObjectField("message", formattedMessage);
         }
@@ -54,7 +54,12 @@ public class ClassicElasticsearchPublisher extends AbstractElasticsearchPublishe
             List<String> excludedKeys = getExcludedMdcKeys();
             for (Map.Entry<String, String> entry : event.getMDCPropertyMap().entrySet()) {
                 if (!excludedKeys.contains(entry.getKey())) {
-                    gen.writeObjectField(entry.getKey(), entry.getValue());
+                    String writtenValue = entry.getValue();
+                    if (writtenValue != null && writtenValue.length() > 999980)
+                    {
+                        writtenValue = writtenValue.substring(0, 999980) + "... (abrv.)";
+                    }
+                    gen.writeObjectField(entry.getKey(), writtenValue);
                 }
             }
         }
