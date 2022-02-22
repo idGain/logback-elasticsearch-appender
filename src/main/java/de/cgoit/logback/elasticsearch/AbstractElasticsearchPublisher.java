@@ -208,7 +208,9 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
             serializeEvent(gen, event, propertyList);
             gen.writeRaw('\n');
             gen.flush();
-            elasticWriter.checkBufferExceeded();
+            if (elasticWriter != null) {
+                elasticWriter.checkBufferExceeded();
+            }
         }
     }
 
