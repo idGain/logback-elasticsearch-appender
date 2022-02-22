@@ -72,11 +72,6 @@ public class ElasticsearchWriter implements SafeWriter {
         }
 
         sendBuffer.append(cbuf, off, len);
-
-        if (sendBuffer.length() >= settings.getMaxQueueSize()) {
-            errorReporter.logWarning("Send queue maximum size exceeded - log messages will be lost until the buffer is cleared");
-            bufferExceeded = true;
-        }
     }
 
     public Set<Integer> sendData() throws IOException {
@@ -135,6 +130,13 @@ public class ElasticsearchWriter implements SafeWriter {
 
     public boolean hasPendingData() {
         return sendBuffer.length() != 0;
+    }
+
+    public void checkBufferExceeded() {
+        if (!bufferExceeded && sendBuffer.length() >= settings.getMaxQueueSize()) {
+            errorReporter.logWarning("Send queue maximum size exceeded - log messages will be lost until the buffer is cleared");
+            bufferExceeded = true;
+        }
     }
 
 }

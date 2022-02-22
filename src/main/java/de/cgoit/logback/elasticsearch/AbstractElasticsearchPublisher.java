@@ -34,6 +34,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
     private final Object lock;
     private final PropertySerializer<T> propertySerializer;
     private final ElasticsearchOutputAggregator outputAggregator;
+    private final ElasticsearchWriter elasticWriter;
     private final List<AbstractPropertyAndEncoder<T>> propertyList;
     private final AbstractPropertyAndEncoder<T> indexPattern;
     private final JsonFactory jf;
@@ -51,7 +52,14 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
         this.lock = new Object();
         this.settings = settings;
 
-        this.outputAggregator = configureOutputAggregator(settings, errorReporter, headers);
+        if (settings.getUrl() != null) {
+            elasticWriter = new ElasticsearchWriter(errorReporter, settings, headers);
+        }
+        else
+        {
+            elasticWriter = null;
+        }
+        this.outputAggregator = configureOutputAggregator(settings, errorReporter, elasticWriter);
 
         this.jf = new JsonFactory();
         this.jf.setRootValueSeparator(null);
@@ -71,7 +79,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
         this.propertySerializer = new PropertySerializer<>();
     }
 
-    private static ElasticsearchOutputAggregator configureOutputAggregator(Settings settings, ErrorReporter errorReporter, HttpRequestHeaders httpRequestHeaders) {
+    private static ElasticsearchOutputAggregator configureOutputAggregator(Settings settings, ErrorReporter errorReporter, ElasticsearchWriter elasticWriter) {
         ElasticsearchOutputAggregator spigot = new ElasticsearchOutputAggregator(settings, errorReporter);
 
         if (settings.isLogsToStderr()) {
@@ -83,7 +91,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
         }
 
         if (settings.getUrl() != null) {
-            spigot.addWriter(new ElasticsearchWriter(errorReporter, settings, httpRequestHeaders));
+            spigot.addWriter(elasticWriter);
         }
 
         return spigot;
@@ -199,8 +207,9 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
             gen.writeRaw('\n');
             serializeEvent(gen, event, propertyList);
             gen.writeRaw('\n');
+            gen.flush();
+            elasticWriter.checkBufferExceeded();
         }
-        gen.flush();
     }
 
     private void serializeIndexString(JsonGenerator gen, T event) throws IOException {
