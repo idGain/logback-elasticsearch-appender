@@ -33,7 +33,7 @@
   </scm>
   <properties>
     <jackson.version>2.11.1</jackson.version>
-    <jacoco.version>0.8.5</jacoco.version>
+    <jacoco.version>0.8.8</jacoco.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <project.scm.id>github</project.scm.id>
@@ -272,6 +272,7 @@
           <tagNameFormat>v@{project.version}</tagNameFormat>
           <useReleaseProfile>false</useReleaseProfile>
           <releaseProfiles>release</releaseProfiles>
+          <!--suppress UnresolvedMavenProperty -->
           <developmentVersion>${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}-SNAPSHOT</developmentVersion>
         </configuration>
       </plugin>
