@@ -196,6 +196,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
                     Thread.sleep(settings.getSleepTimeAfterError());
                 }
             } catch (InterruptedException interruptedException) {
+                working.set(false);
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
                 errorReporter.logError("Internal error handling log data: " + e.getMessage(), e);
@@ -203,6 +204,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
                 try {
                     Thread.sleep(settings.getSleepTimeAfterError());
                 } catch (InterruptedException interruptedException) {
+                    working.set(false);
                     Thread.currentThread().interrupt();
                 }
             }
