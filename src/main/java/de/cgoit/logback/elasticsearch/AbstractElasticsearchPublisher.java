@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
@@ -44,7 +45,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
     private final ErrorReporter errorReporter;
     protected Settings settings;
     private volatile List<T> events;
-    private volatile boolean working;
+    private AtomicBoolean working = new AtomicBoolean(false);
 
     public AbstractElasticsearchPublisher(Context context, ErrorReporter errorReporter, Settings settings, ElasticsearchProperties properties, HttpRequestHeaders headers) throws IOException {
         this.errorReporter = errorReporter;
@@ -126,8 +127,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
                 errorReporter.logWarning("Max events in queue reached - log messages will be lost until the queue is processed");
                 ((LinkedList<T>) events).removeFirst();
             }
-            if (!working) {
-                working = true;
+            if (!working.get()) {
                 Thread thread = new Thread(this, THREAD_NAME_PREFIX + THREAD_COUNTER.getAndIncrement());
                 thread.start();
             }
@@ -136,6 +136,11 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
 
     @Override
     public void run() {
+        synchronized (lock) {
+            if (!working.compareAndSet(false, true)) {
+                return;
+            }
+        }
         int currentTry = 1;
         int maxRetries = settings.getMaxRetries();
         while (true) {
@@ -153,13 +158,13 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
                     if (eventsCopy == null) {
                         if (!outputAggregator.hasPendingData()) {
                             // all done
-                            working = false;
+                            working.set(false);
                             return;
                         } else {
                             // Nothing new, must be a retry
                             if (currentTry > maxRetries) {
                                 // Oh well, better luck next time
-                                working = false;
+                                working.set(false);
                                 DATE_FORMAT.remove();
                                 return;
                             }
@@ -190,13 +195,15 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
                     currentTry++;
                     Thread.sleep(settings.getSleepTimeAfterError());
                 }
+            } catch (InterruptedException interruptedException) {
+                Thread.currentThread().interrupt();
             } catch (Exception e) {
                 errorReporter.logError("Internal error handling log data: " + e.getMessage(), e);
                 currentTry++;
                 try {
                     Thread.sleep(settings.getSleepTimeAfterError());
                 } catch (InterruptedException interruptedException) {
-                    // nothing to do
+                    Thread.currentThread().interrupt();
                 }
             }
         }
