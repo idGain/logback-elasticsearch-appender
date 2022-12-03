@@ -34,7 +34,11 @@ public class Settings {
     }
 
     public void setIndex(String index) {
-        this.index = index;
+        if (index.contains("-ds-") && index.contains("-%date")) {
+            this.index = index.split("\\-\\%date")[0];
+        } else {
+            this.index = index;
+        }
     }
 
     public String getType() {
