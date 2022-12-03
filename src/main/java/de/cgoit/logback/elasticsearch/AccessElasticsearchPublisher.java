@@ -12,6 +12,7 @@ import de.cgoit.logback.elasticsearch.util.AccessPropertyAndEncoder;
 import de.cgoit.logback.elasticsearch.util.ErrorReporter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class AccessElasticsearchPublisher extends AbstractElasticsearchPublisher<IAccessEvent> {
 
@@ -31,5 +32,6 @@ public class AccessElasticsearchPublisher extends AbstractElasticsearchPublisher
         if (type != null) {
             gen.writeObjectField("type", type);
         }
+        gen.writeObjectField("_id", UUID.randomUUID().toString());
     }
 }
